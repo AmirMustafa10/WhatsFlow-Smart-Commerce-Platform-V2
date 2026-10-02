@@ -40,9 +40,9 @@ WhatsFlow V2 is a comprehensive, intelligent commerce platform designed to bridg
 *   PostgreSQL running locally or remotely
 *   Redis server (for Celery workers)
 
-### Installation & Setup
+### 1. Installation & Setup
 
-1. **Clone the repository:**
+**Clone the repository:**
    ```bash
    git clone [https://github.com/AmirMustafa10/WhatsFlow-Smart-Commerce-Platform-V2.git](https://github.com/AmirMustafa10/WhatsFlow-Smart-Commerce-Platform-V2.git)
    cd WhatsFlow-Smart-Commerce-Platform-V2
