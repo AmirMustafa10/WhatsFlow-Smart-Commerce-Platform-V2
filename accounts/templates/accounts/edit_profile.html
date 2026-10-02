@@ -1,0 +1,170 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Profile | WhatsFlow{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'accounts/css/edit_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="edit-profile-page" data-page="edit-profile">
+  <div class="edit-profile-shell">
+
+    <header class="edit-page-header">
+      <a class="back-link" href="{% url 'accounts:my_profile' %}">
+        <span class="back-icon">←</span>
+        <span data-i18n="back">Back to My Profile</span>
+      </a>
+
+      <div class="header-copy">
+        <span class="eyebrow" data-i18n="eyebrow">ACCOUNT SETTINGS</span>
+        <h1 data-i18n="title">Edit your profile</h1>
+        <p data-i18n="subtitle">Keep your personal information accurate and up to date.</p>
+      </div>
+    </header>
+
+    {% if messages %}
+      <div class="messages-stack" aria-live="polite">
+        {% for message in messages %}
+          <div class="message-card {{ message.tags }}">
+            <span class="message-icon">✓</span>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <section class="edit-layout">
+
+      <aside class="profile-preview-card">
+        <div class="preview-glow"></div>
+        <div class="preview-top">
+          <span class="preview-label" data-i18n="previewLabel">PROFILE PREVIEW</span>
+          <span class="live-pill"><i></i><span data-i18n="live">Live</span></span>
+        </div>
+
+        <div class="avatar-preview-wrap">
+          {% if user.avatar %}
+            <img id="avatarPreview" class="avatar-preview" src="{{ user.avatar.url }}" alt="Profile avatar">
+          {% else %}
+            <div id="avatarPreview" class="avatar-preview avatar-fallback">
+              {{ user.get_full_namer }}
+            </div>
+          {% endif %}
+          <label class="avatar-upload" for="avatarPreviewInput" title="Change profile photo">
+            <span>＋</span>
+            <input id="avatarPreviewInput" name="avatar_preview_only" type="file" accept="image/*" hidden>
+          </label>
+        </div>
+
+        <h2 id="previewName">{{ user.get_full_name }}</h2>
+        <p id="previewEmail">{{ user.email }}</p>
+
+        <div class="preview-meta">
+          <div>
+            <span data-i18n="role">Role</span>
+            <strong>{{ user.get_role_display|default:"Member" }}</strong>
+          </div>
+          <div>
+            <span data-i18n="workspace">Workspace</span>
+            <strong>{% if user.store %}{{ user.store.name }}{% else %}—{% endif %}</strong>
+          </div>
+        </div>
+
+        <div class="locked-note">
+          <span>🔒</span>
+          <p data-i18n="locked">Role and workspace are managed by the business owner and cannot be changed here.</p>
+        </div>
+      </aside>
+
+      <section class="edit-form-card">
+        <div class="card-heading">
+          <div>
+            <span class="section-kicker">01</span>
+            <h2 data-i18n="personalTitle">Personal information</h2>
+            <p data-i18n="personalSubtitle">Update the information used on your WhatsFlow account.</p>
+          </div>
+          <span class="secure-badge">🔐 <span data-i18n="secure">Secure</span></span>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" id="profileForm" novalidate>
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="form-error">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <div class="form-grid">
+            <div class="field full">
+              {{ form.full_name|as_crispy_field }}
+            </div>
+            <div class="field">
+              {{ form.email|as_crispy_field }}
+            </div>
+            {% if form.phone %}
+            <div class="field">
+              {{ form.phone|as_crispy_field }}
+            </div>
+            {% endif %}
+            {% if form.avatar %}
+            <div class="field full avatar-field">
+              {{ form.avatar|as_crispy_field }}
+              <small data-i18n="avatarHelp">Use a clear JPG, PNG, or WebP image.</small>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="readonly-workspace">
+            <div class="readonly-heading">
+              <span class="section-kicker">02</span>
+              <div>
+                <h3 data-i18n="workspaceTitle">Workspace access</h3>
+                <p data-i18n="workspaceSubtitle">These details are controlled by your workspace.</p>
+              </div>
+            </div>
+
+            <div class="readonly-grid">
+              <div class="readonly-item">
+                <span data-i18n="business">Business</span>
+                <strong>{% if user.store %}{{ user.store.name }}{% else %}—{% endif %}</strong>
+              </div>
+              <div class="readonly-item">
+                <span data-i18n="accessRole">Access role</span>
+                <strong>{{ user.get_role_display|default:"Member" }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a class="btn btn-ghost" href="{% url 'accounts:my_profile' %}" data-i18n="cancel">Cancel</a>
+            <button class="btn btn-primary" type="submit" id="saveProfileBtn">
+              <span class="btn-label" data-i18n="save">Save changes</span>
+              <span class="btn-loading" aria-hidden="true">
+                <span class="spinner"></span>
+                <span data-i18n="saving">Saving…</span>
+              </span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <section class="security-strip">
+      <div class="security-icon">🛡</div>
+      <div>
+        <span class="security-kicker" data-i18n="securityKicker">ACCOUNT SECURITY</span>
+        <h2 data-i18n="securityTitle">Want to update your password?</h2>
+        <p data-i18n="securityText">Password changes are handled separately so your profile edits stay simple.</p>
+      </div>
+      <a class="btn btn-secondary" href="{% url 'accounts:password_change' %}" data-i18n="changePassword">Change password</a>
+    </section>
+
+  </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'accounts/js/edit_profile.js' %}"></script>
+{% endblock %}

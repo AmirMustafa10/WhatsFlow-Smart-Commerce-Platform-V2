@@ -1,0 +1,225 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'accounts/css/signup.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="signup-page" data-signup-page>
+    <div class="signup-page-bg"></div>
+    <div class="signup-noise"></div>
+
+    <div class="container position-relative">
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <section class="signup-success-state" data-success-state>
+                    <div class="signup-success-icon"><i class="fas fa-check"></i></div>
+                    <span class="signup-success-eyebrow" data-i18n="success.eyebrow">REGISTRATION COMPLETE</span>
+                    <h1 data-i18n="success.title">Your business is registered</h1>
+                    <p data-i18n="success.description">Your account was created successfully. Your business activation will be handled by the WhatsFlow platform team.</p>
+                    <div class="signup-success-note">
+                        <i class="fas fa-circle-info"></i>
+                        <span data-i18n="success.note">You are already signed in and can continue to your dashboard.</span>
+                    </div>
+                    <a href="{% url 'accounts:dashboard' %}" class="signup-success-btn">
+                        <span data-i18n="success.button">Go to Dashboard</span><i class="fas fa-arrow-right"></i>
+                    </a>
+                </section>
+            {% endif %}
+        {% empty %}
+            <section class="signup-layout">
+                <aside class="signup-showcase">
+                    <div class="signup-showcase-top">
+                        <span class="signup-eyebrow"><i class="fab fa-whatsapp"></i> WHATSFLOW</span>
+                        <span class="signup-step" data-step-label>01 / 04</span>
+                    </div>
+
+                    <div class="signup-showcase-content">
+                        <span class="signup-showcase-label" data-i18n="showcase.eyebrow">BUILD YOUR WORKSPACE</span>
+                        <h1 data-i18n="showcase.title">One account.<br><span>One connected business.</span></h1>
+                        <p data-i18n="showcase.description">Create your WhatsFlow workspace, tell us what you sell, and prepare the business identity your team and WhatsApp assistant will work from.</p>
+
+                        <div class="signup-progress">
+                            <div class="signup-progress-top">
+                                <span data-i18n="progress.label">Setup progress</span>
+                                <strong data-progress-percent>0%</strong>
+                            </div>
+                            <div class="signup-progress-track"><span data-progress-bar></span></div>
+                        </div>
+
+                        <div class="signup-live-summary">
+                            <div class="signup-live-summary-head">
+                                <span data-i18n="summary.eyebrow">LIVE SUMMARY</span>
+                                <i class="fas fa-wand-magic-sparkles"></i>
+                            </div>
+                            <div class="signup-summary-business">
+                                <div class="signup-summary-avatar" data-summary-avatar>W</div>
+                                <div>
+                                    <strong data-summary-name data-i18n="summary.businessPlaceholder">Your business</strong>
+                                    <span data-summary-type data-i18n="summary.typePlaceholder">Business type not selected</span>
+                                </div>
+                            </div>
+                            <div class="signup-summary-list">
+                                <div><i class="fas fa-user"></i><span data-summary-owner data-i18n="summary.ownerPlaceholder">Owner name will appear here</span></div>
+                                <div><i class="fas fa-envelope"></i><span data-summary-email data-i18n="summary.emailPlaceholder">Email will appear here</span></div>
+                                <div><i class="fab fa-whatsapp"></i><span data-summary-whatsapp data-i18n="summary.whatsappPlaceholder">WhatsApp number will appear here</span></div>
+                            </div>
+                        </div>
+
+                        <div class="signup-benefits">
+                            <div class="signup-benefit"><span class="signup-benefit-icon"><i class="fas fa-store"></i></span><div><strong data-i18n="benefit.workspace.title">Business workspace</strong><span data-i18n="benefit.workspace.text">A dedicated place for your store, team and operations.</span></div></div>
+                            <div class="signup-benefit"><span class="signup-benefit-icon"><i class="fab fa-whatsapp"></i></span><div><strong data-i18n="benefit.whatsapp.title">WhatsApp ready</strong><span data-i18n="benefit.whatsapp.text">Connect your business number after registration.</span></div></div>
+                            <div class="signup-benefit"><span class="signup-benefit-icon"><i class="fas fa-brain"></i></span><div><strong data-i18n="benefit.ai.title">Knowledge-powered AI</strong><span data-i18n="benefit.ai.text">Your business information can power customer conversations.</span></div></div>
+                        </div>
+                    </div>
+
+                    <div class="signup-showcase-footer">
+                        <span data-i18n="showcase.already">Already have an account?</span>
+                        <a href="{% url 'accounts:login' %}"><span data-i18n="showcase.signin">Sign in</span><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </aside>
+
+                <section class="signup-form-panel">
+                    <div class="signup-form-header">
+                        <div>
+                            <span class="signup-form-eyebrow" data-i18n="header.eyebrow">CREATE YOUR ACCOUNT</span>
+                            <h2 data-i18n="header.title">Let's set up your business</h2>
+                            <p data-i18n="header.description">A few details now will give your WhatsFlow workspace the right starting point.</p>
+                        </div>
+                        <div class="signup-secure-badge"><i class="fas fa-shield-halved"></i><span data-i18n="header.secure">Secure setup</span></div>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="signup-form-alert error">
+                            <div class="signup-form-alert-icon"><i class="fas fa-circle-exclamation"></i></div>
+                            <div><strong data-i18n="errors.title">Please check the form</strong>{% for error in form.non_field_errors %}<span>{{ error }}</span>{% endfor %}</div>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="signup-form" id="merchantSignupForm" novalidate>
+                        {% csrf_token %}
+
+                        <div class="signup-section-nav" role="tablist" aria-label="Signup sections">
+                            <button type="button" class="signup-section-tab is-active" data-section-tab="1"><span>01</span><b data-i18n="nav.business">Business</b></button>
+                            <button type="button" class="signup-section-tab" data-section-tab="2"><span>02</span><b data-i18n="nav.owner">Owner</b></button>
+                            <button type="button" class="signup-section-tab" data-section-tab="3"><span>03</span><b data-i18n="nav.whatsapp">WhatsApp</b></button>
+                            <button type="button" class="signup-section-tab" data-section-tab="4"><span>04</span><b data-i18n="nav.security">Security</b></button>
+                        </div>
+
+                        <div class="signup-form-section is-active" data-section="1">
+                            <div class="signup-section-heading"><span class="signup-section-number">01</span><div><strong data-i18n="section.business.title">Your business</strong><span data-i18n="section.business.subtitle">Give your workspace its identity.</span></div></div>
+
+                            <div class="signup-field">
+                                <label for="{{ form.store_name.id_for_label }}"><span data-i18n="field.storeName">Store Name</span><em>*</em></label>
+                                {{ form.store_name }}
+                                <div class="signup-field-meta"><span data-i18n="help.storeName">This is the name customers and your team will recognize.</span><span data-store-count>0/80</span></div>
+                                {% if form.store_name.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.store_name.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-field">
+                                <label for="{{ form.business_type.id_for_label }}"><span data-i18n="field.businessType">Business Type</span><em>*</em></label>
+                                {{ form.business_type }}
+                                <span class="signup-field-help" data-i18n="help.businessType">Choose the category that best describes your business.</span>
+                                {% if form.business_type.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.business_type.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-field">
+                                <label for="id_business_description"><span data-i18n="field.description">Business Description</span><em>*</em></label>
+                                {% if form.business_description %}{{ form.business_description }}{% else %}<textarea name="business_description" id="id_business_description" maxlength="500" placeholder="Tell us what your business sells or provides..."></textarea>{% endif %}
+                                <div class="signup-field-meta"><span data-i18n="help.description">Describe what your business sells or provides. This can later help shape your business knowledge.</span><span data-description-count>0/500</span></div>
+                                {% if form.business_description.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.business_description.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-section-tip"><i class="fas fa-lightbulb"></i><span data-i18n="tip.business">Tip: use a clear description such as “Online fashion store selling modest women's clothing and accessories.”</span></div>
+                        </div>
+
+                        <div class="signup-form-section" data-section="2">
+                            <div class="signup-section-heading"><span class="signup-section-number">02</span><div><strong data-i18n="section.owner.title">Your details</strong><span data-i18n="section.owner.subtitle">This information identifies your account.</span></div></div>
+
+                            <div class="signup-field">
+                                <label for="{{ form.full_name.id_for_label }}"><span data-i18n="field.fullName">Full Name</span><em>*</em></label>
+                                {{ form.full_name }}
+                                {% if form.full_name.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.full_name.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-field">
+                                <label for="{{ form.email.id_for_label }}"><span data-i18n="field.email">Email</span><em>*</em></label>
+                                {{ form.email }}
+                                <span class="signup-field-help" data-i18n="help.email">Use an email you can access for account and business notifications.</span>
+                                {% if form.email.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.email.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-section-tip"><i class="fas fa-user-check"></i><span data-i18n="tip.owner">Your account becomes the first owner profile of this business workspace.</span></div>
+                        </div>
+
+                        <div class="signup-form-section" data-section="3">
+                            <div class="signup-section-heading"><span class="signup-section-number">03</span><div><strong data-i18n="section.whatsapp.title">WhatsApp connection</strong><span data-i18n="section.whatsapp.subtitle">Tell us which business number you plan to connect.</span></div></div>
+
+                            <div class="signup-whatsapp-note"><div class="signup-whatsapp-note-icon"><i class="fab fa-whatsapp"></i></div><div><strong data-i18n="whatsapp.noteTitle">Your business number</strong><p data-i18n="whatsapp.noteText">This is the number the WhatsFlow team will use when preparing your WhatsApp connection. It does not connect automatically during signup.</p></div></div>
+
+                            <div class="signup-field">
+                                <label for="{{ form.whatsapp_number.id_for_label }}"><span data-i18n="field.whatsapp">WhatsApp Number</span><em>*</em></label>
+                                {{ form.whatsapp_number }}
+                                <span class="signup-field-help" data-i18n="help.whatsapp">Use international format, for example +201001234567.</span>
+                                {% if form.whatsapp_number.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.whatsapp_number.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-activation-flow">
+                                <div class="signup-flow-item is-done"><span><i class="fas fa-check"></i></span><div><strong data-i18n="flow.register">Registration</strong><small data-i18n="flow.registerText">Create your business account</small></div></div>
+                                <div class="signup-flow-line"></div>
+                                <div class="signup-flow-item"><span>2</span><div><strong data-i18n="flow.connect">Connection</strong><small data-i18n="flow.connectText">WhatsFlow team connects your number</small></div></div>
+                                <div class="signup-flow-line"></div>
+                                <div class="signup-flow-item"><span>3</span><div><strong data-i18n="flow.activate">Activation</strong><small data-i18n="flow.activateText">Your workspace is ready to operate</small></div></div>
+                            </div>
+                        </div>
+
+                        <div class="signup-form-section" data-section="4">
+                            <div class="signup-section-heading"><span class="signup-section-number">04</span><div><strong data-i18n="section.security.title">Account security</strong><span data-i18n="section.security.subtitle">Protect access to your business workspace.</span></div></div>
+
+                            <div class="signup-field">
+                                <label for="{{ form.password.id_for_label }}"><span data-i18n="field.password">Password</span><em>*</em></label>
+                                <div class="signup-password-wrap">{{ form.password }}<button type="button" class="signup-password-toggle" data-password-toggle data-target="{{ form.password.id_for_label }}" aria-label="Show password" title="Show password"><i class="fas fa-eye"></i></button></div>
+                                <div class="signup-password-strength" data-password-strength><span></span><span></span><span></span><span></span><b data-password-strength-label data-i18n="password.strength.empty">Enter a password</b></div>
+                                {% if form.password.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.password.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-field">
+                                <label for="{{ form.confirm_password.id_for_label }}"><span data-i18n="field.confirmPassword">Confirm Password</span><em>*</em></label>
+                                <div class="signup-password-wrap">{{ form.confirm_password }}<button type="button" class="signup-password-toggle" data-password-toggle data-target="{{ form.confirm_password.id_for_label }}" aria-label="Show password" title="Show password"><i class="fas fa-eye"></i></button></div>
+                                <div class="signup-match" data-password-match></div>
+                                {% if form.confirm_password.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.confirm_password.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-terms-box">
+                                <label class="signup-checkbox" for="id_accept_terms">
+                                    {% if form.accept_terms %}{{ form.accept_terms }}{% else %}<input type="checkbox" name="accept_terms" id="id_accept_terms">{% endif %}
+                                    <span class="signup-checkbox-ui"><i class="fas fa-check"></i></span>
+                                    <span class="signup-terms-copy"><span data-i18n="terms.text">I agree to the WhatsFlow Terms of Service and Privacy Policy, and I confirm that the information provided is accurate.</span></span>
+                                </label>
+                                {% if form.accept_terms.errors %}<div class="signup-field-error"><i class="fas fa-circle-exclamation"></i><div>{% for error in form.accept_terms.errors %}<span>{{ error }}</span>{% endfor %}</div></div>{% endif %}
+                            </div>
+
+                            <div class="signup-activation-note"><span class="signup-activation-icon"><i class="fas fa-clock"></i></span><div><strong data-i18n="activation.title">What happens after signup?</strong><p data-i18n="activation.text">Your registration is created first. The WhatsFlow platform team will contact you within 24 business hours to connect the WhatsApp number and activate the business workspace.</p></div></div>
+                        </div>
+
+                        <div class="signup-form-footer">
+                            <button type="button" class="signup-back-btn" data-prev-section><i class="fas fa-arrow-left"></i><span data-i18n="buttons.back">Back</span></button>
+                            <div class="signup-footer-actions">
+                                <button type="button" class="signup-next-btn" data-next-section><span data-i18n="buttons.continue">Continue</span><i class="fas fa-arrow-right"></i></button>
+                                <button type="submit" class="signup-submit-btn" id="signupSubmitBtn"><span class="signup-submit-default" data-i18n="buttons.create">Create Merchant Account <i class="fas fa-arrow-right"></i></span><span class="signup-submit-loading"><i class="fas fa-spinner fa-spin"></i><span data-i18n="buttons.creating">Creating account...</span></span></button>
+                            </div>
+                        </div>
+
+                        <div class="signup-mobile-login"><span data-i18n="showcase.already">Already have an account?</span><a href="{% url 'accounts:login' %}" data-i18n="showcase.signin">Sign in</a></div>
+                    </form>
+                </section>
+            </section>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'accounts/js/signup.js' %}"></script>
+{% endblock %}

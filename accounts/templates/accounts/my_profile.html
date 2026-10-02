@@ -1,0 +1,360 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}My Profile | WhatsFlow{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'accounts/css/my_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="my-profile-page" id="myProfilePage" data-page="my-profile">
+    <div class="my-profile-bg" aria-hidden="true">
+        <span class="profile-orb orb-one"></span>
+        <span class="profile-orb orb-two"></span>
+        <span class="profile-grid"></span>
+    </div>
+
+    <div class="container position-relative profile-container">
+
+        <header class="profile-header">
+            <div>
+                <span class="profile-eyebrow">
+                    <i class="fas fa-user-circle"></i>
+                    <span data-en="MY ACCOUNT" data-ar="حسابي">MY ACCOUNT</span>
+                </span>
+                <h1 data-en="Your profile, your settings." data-ar="بروفايلك وإعدادات حسابك.">Your profile, your settings.</h1>
+                <p data-en="Manage your personal information, security, notifications, and workspace preferences from one place."
+                   data-ar="إدارة بياناتك الشخصية وأمان حسابك والإشعارات وتفضيلات مساحة العمل من مكان واحد.">
+                    Manage your personal information, security, notifications, and workspace preferences from one place.
+                </p>
+            </div>
+            <a href="{% url 'accounts:team_list' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span data-en="Back to team" data-ar="العودة للفريق">Back to team</span>
+            </a>
+        </header>
+
+        {% if messages %}
+        <div class="profile-messages">
+            {% for message in messages %}
+            <div class="profile-alert {{ message.tags }}" role="alert">
+                <i class="fas {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'error' or message.tags == 'danger' %}fa-circle-xmark{% else %}fa-circle-info{% endif %}"></i>
+                <span>{{ message }}</span>
+                <button type="button" class="alert-close" aria-label="Close" data-aria-en="Close" data-aria-ar="إغلاق"><i class="fas fa-xmark"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <section class="profile-hero-card">
+            <div class="hero-cover"></div>
+            <div class="hero-content">
+                <div class="avatar-zone">
+                    <div class="profile-avatar" id="profileAvatar">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.full_name|default:user.email }}">
+                        {% else %}
+                            {{ user.full_name|default:user.email|first|upper }}
+                        {% endif %}
+                    </div>
+                    <label class="avatar-edit" for="avatarInput" title="Change profile photo">
+                        <i class="fas fa-camera"></i>
+                        <input id="avatarInput" type="file" name="avatar" accept="image/*" hidden>
+                    </label>
+                </div>
+
+                <div class="hero-identity">
+                    <div class="identity-topline">
+                        <span class="status-dot"></span>
+                        <span data-en="ACTIVE ACCOUNT" data-ar="حساب نشط">ACTIVE ACCOUNT</span>
+                    </div>
+                    <h2>{{ user.full_name|default:"Your name" }}</h2>
+                    <p>{{ user.email }}</p>
+                    <div class="identity-meta">
+                        <span><i class="fas fa-user-shield"></i>{{ user.get_role_display|default:user.role }}</span>
+                        <span><i class="fas fa-building"></i>{% if user.store %}{{ user.store.name }}{% else %}WhatsFlow workspace{% endif %}</span>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <span class="account-badge">
+                        <i class="fas fa-shield-halved"></i>
+                        <span data-en="Workspace access" data-ar="صلاحية مساحة العمل">Workspace access</span>
+                    </span>
+                    <span class="joined-label">
+                        <span data-en="Member since" data-ar="عضو منذ">Member since</span>
+                        <strong>{{ user.date_joined|date:"M d, Y" }}</strong>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <div class="profile-layout">
+            <aside class="profile-nav-card">
+                <div class="nav-title">
+                    <span data-en="Settings" data-ar="الإعدادات">Settings</span>
+                    <i class="fas fa-sliders"></i>
+                </div>
+
+                <nav class="profile-tabs" aria-label="Profile settings" data-aria-en="Profile settings" data-aria-ar="إعدادات البروفايل">
+                    <button type="button" class="profile-tab active" data-tab="personal">
+                        <span class="tab-icon"><i class="fas fa-user"></i></span>
+                        <span><strong data-en="Personal info" data-ar="البيانات الشخصية">Personal info</strong><small data-en="Name & email" data-ar="الاسم والإيميل">Name & email</small></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button type="button" class="profile-tab" data-tab="security">
+                        <span class="tab-icon"><i class="fas fa-lock"></i></span>
+                        <span><strong data-en="Security" data-ar="الأمان">Security</strong><small data-en="Password & sessions" data-ar="كلمة المرور والجلسات">Password & sessions</small></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button type="button" class="profile-tab" data-tab="notifications">
+                        <span class="tab-icon"><i class="fas fa-bell"></i></span>
+                        <span><strong data-en="Notifications" data-ar="الإشعارات">Notifications</strong><small data-en="How you stay informed" data-ar="طريقة استلام التنبيهات">How you stay informed</small></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button type="button" class="profile-tab" data-tab="preferences">
+                        <span class="tab-icon"><i class="fas fa-sliders"></i></span>
+                        <span><strong data-en="Preferences" data-ar="التفضيلات">Preferences</strong><small data-en="Language & appearance" data-ar="اللغة والمظهر">Language & appearance</small></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </nav>
+
+                <div class="security-mini-card">
+                    <span class="mini-icon"><i class="fas fa-shield-check"></i></span>
+                    <div>
+                        <strong data-en="Keep your account secure" data-ar="حافظ على أمان حسابك">Keep your account secure</strong>
+                        <p data-en="Use a strong password and review active sessions regularly."
+                           data-ar="استخدم كلمة مرور قوية وراجع الجلسات النشطة باستمرار.">Use a strong password and review active sessions regularly.</p>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="profile-settings">
+
+                <!-- PERSONAL -->
+                <section class="settings-panel active" id="tab-personal">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="section-kicker" data-en="PROFILE" data-ar="الملف الشخصي">PROFILE</span>
+                            <h2 data-en="Personal information" data-ar="البيانات الشخصية">Personal information</h2>
+                            <p data-en="Review the information connected to your account. Use Edit profile to update it."
+                               data-ar="راجع البيانات المرتبطة بحسابك. استخدم تعديل البروفايل لتحديثها.">
+                                Review the information connected to your account. Use Edit profile to update it.
+                            </p>
+                        </div>
+                        <span class="panel-icon"><i class="fas fa-id-card"></i></span>
+                    </div>
+
+                    <div class="profile-summary-section">
+                        <div class="profile-summary-top">
+                            <div>
+                                <span class="summary-kicker" data-en="ACCOUNT DETAILS" data-ar="بيانات الحساب">ACCOUNT DETAILS</span>
+                                <h3 data-en="Your personal information" data-ar="بياناتك الشخصية">Your personal information</h3>
+                                <p data-en="These are the details connected to your WhatsFlow account."
+                                   data-ar="دي البيانات المرتبطة بحسابك على WhatsFlow.">
+                                    These are the details connected to your WhatsFlow account.
+                                </p>
+                            </div>
+
+                            <a href="{% url 'accounts:profile_edit' %}" class="btn-primary profile-edit-link">
+                                <i class="fas fa-user-pen"></i>
+                                <span data-en="Edit profile" data-ar="تعديل البروفايل">Edit profile</span>
+                            </a>
+                        </div>
+
+                        <div class="account-details-grid">
+                            <div class="account-detail">
+                                <span class="detail-icon"><i class="fas fa-user"></i></span>
+                                <div>
+                                    <small data-en="Full name" data-ar="الاسم بالكامل">Full name</small>
+                                    <strong>{{ user.full_name|default:"Not provided" }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="account-detail">
+                                <span class="detail-icon"><i class="fas fa-envelope"></i></span>
+                                <div>
+                                    <small data-en="Email address" data-ar="البريد الإلكتروني">Email address</small>
+                                    <strong>{{ user.email|default:"Not provided" }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="account-detail">
+                                <span class="detail-icon"><i class="fas fa-phone"></i></span>
+                                <div>
+                                    <small data-en="Phone number" data-ar="رقم الهاتف">Phone number</small>
+                                    <strong>{{ user.phone|default:"Not provided" }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="account-detail">
+                                <span class="detail-icon"><i class="fas fa-calendar-days"></i></span>
+                                <div>
+                                    <small data-en="Member since" data-ar="عضو منذ">Member since</small>
+                                    <strong>{{ user.date_joined|date:"M d, Y" }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="workspace-summary">
+                        <div class="form-section-title">
+                            <span data-en="Workspace information" data-ar="بيانات مساحة العمل">Workspace information</span>
+                            <small data-en="Controlled by your business owner" data-ar="تتم إدارتها بواسطة مالك البيزنس">Controlled by your business owner</small>
+                        </div>
+
+                        <div class="locked-info-grid">
+                            <div class="locked-field">
+                                <span data-en="Role" data-ar="الدور">Role</span>
+                                <strong>{{ user.get_role_display|default:user.role }}</strong>
+                                <i class="fas fa-lock"></i>
+                            </div>
+
+                            <div class="locked-field">
+                                <span data-en="Business" data-ar="البيزنس">Business</span>
+                                <strong>{% if user.store %}{{ user.store.name }}{% else %}WhatsFlow workspace{% endif %}</strong>
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+
+                        <div class="workspace-note">
+                            <i class="fas fa-lock"></i>
+                            <span data-en="Store and role are managed by your workspace administrator."
+                                  data-ar="البيزنس والدور يتم التحكم فيهم بواسطة مسؤول مساحة العمل.">
+                                Store and role are managed by your workspace administrator.
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECURITY -->
+                <section class="settings-panel" id="tab-security" hidden>
+                    <div class="panel-heading">
+                        <div>
+                            <span class="section-kicker" data-en="SECURITY" data-ar="الأمان">SECURITY</span>
+                            <h2 data-en="Protect your account" data-ar="حماية حسابك">Protect your account</h2>
+                            <p data-en="Manage your password from the dedicated secure password page."
+                               data-ar="إدارة كلمة المرور من صفحة الأمان المخصصة لها.">
+                                Manage your password from the dedicated secure password page.
+                            </p>
+                        </div>
+                        <span class="panel-icon"><i class="fas fa-shield-halved"></i></span>
+                    </div>
+
+                    <div class="security-action-card">
+                        <div class="security-action-icon"><i class="fas fa-key"></i></div>
+                        <div class="security-action-copy">
+                            <span class="section-kicker" data-en="PASSWORD SETTINGS" data-ar="إعدادات كلمة المرور">PASSWORD SETTINGS</span>
+                            <h3 data-en="Change your password" data-ar="غيّر كلمة المرور">Change your password</h3>
+                            <p data-en="Only complete this when you want to change your password. Your current password is required."
+                               data-ar="استخدم الصفحة دي فقط عند تغيير كلمة المرور، وهي تتطلب كلمة المرور الحالية.">
+                                Only complete this when you want to change your password. Your current password is required.
+                            </p>
+                        </div>
+                        <a href="{% url 'accounts:password_change' %}" class="btn-primary">
+                            <i class="fas fa-lock"></i>
+                            <span data-en="Change password" data-ar="تغيير كلمة المرور">Change password</span>
+                        </a>
+                    </div>
+
+                    <div class="security-guidance">
+                        <div class="guidance-icon"><i class="fas fa-shield-halved"></i></div>
+                        <div>
+                            <strong data-en="Keep your account secure" data-ar="حافظ على أمان حسابك">Keep your account secure</strong>
+                            <p data-en="Use at least 8 characters, mix letters, numbers and symbols, and avoid reusing your WhatsFlow password."
+                               data-ar="استخدم 8 أحرف على الأقل، وامزج بين الحروف والأرقام والرموز، ومتستخدمش كلمة المرور نفسها في مواقع تانية.">
+                                Use at least 8 characters, mix letters, numbers and symbols, and avoid reusing your WhatsFlow password.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NOTIFICATIONS -->
+                <section class="settings-panel" id="tab-notifications" hidden>
+                    <div class="panel-heading">
+                        <div>
+                            <span class="section-kicker" data-en="NOTIFICATIONS" data-ar="الإشعارات">NOTIFICATIONS</span>
+                            <h2 data-en="Choose what reaches you" data-ar="اختار التنبيهات اللي توصلك">Choose what reaches you</h2>
+                            <p data-en="Control the updates you receive from WhatsFlow."
+                               data-ar="تحكم في التحديثات التي تصلك من WhatsFlow.">Control the updates you receive from WhatsFlow.</p>
+                        </div>
+                        <span class="panel-icon"><i class="fas fa-bell"></i></span>
+                    </div>
+
+                    <form method="POST" action="" class="settings-form" id="notificationForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="notifications">
+
+                        <div class="toggle-list">
+                            <label class="toggle-row">
+                                <span class="toggle-icon"><i class="fas fa-box"></i></span>
+                                <span class="toggle-copy"><strong data-en="Order updates" data-ar="تحديثات الطلبات">Order updates</strong><small data-en="New, confirmed, cancelled, and completed orders." data-ar="الطلبات الجديدة والمؤكدة والملغاة والمكتملة.">New, confirmed, cancelled, and completed orders.</small></span>
+                                <input type="checkbox" name="notify_orders" {% if user.notify_orders %}checked{% endif %}><span class="switch"></span>
+                            </label>
+                            <label class="toggle-row">
+                                <span class="toggle-icon"><i class="fas fa-users"></i></span>
+                                <span class="toggle-copy"><strong data-en="Team activity" data-ar="نشاط الفريق">Team activity</strong><small data-en="Important changes made by your team." data-ar="التغييرات المهمة التي يجريها فريقك.">Important changes made by your team.</small></span>
+                                <input type="checkbox" name="notify_team" {% if user.notify_team %}checked{% endif %}><span class="switch"></span>
+                            </label>
+                            <label class="toggle-row">
+                                <span class="toggle-icon"><i class="fas fa-truck"></i></span>
+                                <span class="toggle-copy"><strong data-en="Delivery updates" data-ar="تحديثات التوصيل">Delivery updates</strong><small data-en="Shipment assignment and delivery status changes." data-ar="تعيين الشحنات وتغييرات حالة التوصيل.">Shipment assignment and delivery status changes.</small></span>
+                                <input type="checkbox" name="notify_delivery" {% if user.notify_delivery %}checked{% endif %}><span class="switch"></span>
+                            </label>
+                            <label class="toggle-row">
+                                <span class="toggle-icon"><i class="fas fa-robot"></i></span>
+                                <span class="toggle-copy"><strong data-en="AI & WhatsApp alerts" data-ar="تنبيهات AI وواتساب">AI & WhatsApp alerts</strong><small data-en="Important assistant, connection, and knowledge updates." data-ar="تنبيهات المساعد والاتصال وتحديثات المعرفة المهمة.">Important assistant, connection, and knowledge updates.</small></span>
+                                <input type="checkbox" name="notify_ai" {% if user.notify_ai %}checked{% endif %}><span class="switch"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <span class="auto-save-note"><i class="fas fa-circle-check"></i><span data-en="Your preferences are saved to your account." data-ar="تفضيلاتك محفوظة على حسابك.">Your preferences are saved to your account.</span></span>
+                            <button type="submit" class="btn-primary save-btn"><i class="fas fa-check"></i><span data-en="Save preferences" data-ar="حفظ التفضيلات">Save preferences</span></button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- PREFERENCES -->
+                <section class="settings-panel" id="tab-preferences" hidden>
+                    <div class="panel-heading">
+                        <div>
+                            <span class="section-kicker" data-en="PREFERENCES" data-ar="التفضيلات">PREFERENCES</span>
+                            <h2 data-en="Make WhatsFlow yours" data-ar="خلّي واتس فلو على ذوقك">Make WhatsFlow yours</h2>
+                            <p data-en="Set the language and appearance you want to use."
+                               data-ar="اختار اللغة والمظهر اللي تحب تستخدمهم.">Set the language and appearance you want to use.</p>
+                        </div>
+                        <span class="panel-icon"><i class="fas fa-wand-magic-sparkles"></i></span>
+                    </div>
+
+                    <div class="preference-card">
+                        <div class="preference-copy"><span class="preference-icon"><i class="fas fa-language"></i></span><div><strong data-en="Language" data-ar="اللغة">Language</strong><p data-en="Choose the language used across your workspace." data-ar="اختار اللغة المستخدمة في مساحة العمل.">Choose the language used across your workspace.</p></div></div>
+                        <div class="segmented" id="languageControl"><button type="button" data-lang="en">English</button><button type="button" data-lang="ar">العربية</button></div>
+                    </div>
+
+                    <div class="preference-card">
+                        <div class="preference-copy"><span class="preference-icon"><i class="fas fa-circle-half-stroke"></i></span><div><strong data-en="Appearance" data-ar="المظهر">Appearance</strong><p data-en="Switch between a light and dark workspace." data-ar="بدّل بين المظهر الفاتح والداكن.">Switch between a light and dark workspace.</p></div></div>
+                        <div class="segmented" id="themeControl"><button type="button" data-theme-value="light"><i class="fas fa-sun"></i><span data-en="Light" data-ar="فاتح">Light</span></button><button type="button" data-theme-value="dark"><i class="fas fa-moon"></i><span data-en="Dark" data-ar="داكن">Dark</span></button></div>
+                    </div>
+
+                    <div class="preference-note">
+                        <i class="fas fa-circle-info"></i>
+                        <span data-en="Language and appearance changes are applied immediately on this device."
+                              data-ar="تغييرات اللغة والمظهر تُطبّق فورًا على هذا الجهاز.">Language and appearance changes are applied immediately on this device.</span>
+                    </div>
+                </section>
+            </section>
+        </div>
+
+        <footer class="profile-footer">
+            <span><i class="fas fa-shield-check"></i><span data-en="Your account settings are private to you." data-ar="إعدادات حسابك خاصة بك.">Your account settings are private to you.</span></span>
+            <span>WhatsFlow</span>
+        </footer>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'accounts/js/my_profile.js' %}"></script>
+{% endblock %}

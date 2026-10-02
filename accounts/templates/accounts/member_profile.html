@@ -1,0 +1,182 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ member.full_name|default:"Profile" }} | WhatsFlow{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="profile-page" data-role="{{ member.role }}">
+  <div class="profile-bg" aria-hidden="true"><span></span><span></span></div>
+
+  <div class="container position-relative">
+    <header class="profile-header">
+      <div>
+        <a href="{% url 'accounts:team_list' %}" class="back-link">
+          <i class="fas fa-arrow-left"></i><span data-i18n="back">Back to team</span>
+        </a>
+        <span class="eyebrow"><i class="fas fa-chart-line"></i> <span data-i18n="team_profile">TEAM PROFILE</span></span>
+        <h1>{{ member.full_name|default:"Unnamed user" }}</h1>
+        <p data-i18n="intro">Account identity, role information, and performance insights.</p>
+      </div>
+      {% if request.user == member %}
+      <a href="{% url 'accounts:profile_edit' %}" class="profile-btn">
+        <i class="fas fa-pen"></i> <span data-i18n="edit">Edit profile</span>
+      </a>
+      {% endif %}
+    </header>
+
+    <section class="profile-card hero">
+      <div class="hero-cover"></div>
+      <div class="hero-body">
+        <div class="identity">
+          <div class="avatar-wrap"><div class="avatar">{{ member.full_name|default:member.email|first|upper }}</div>{% if member.is_active %}<i class="avatar-online"></i>{% endif %}</div>
+          <div class="identity-copy">
+            <div class="role-row">
+              {% if member.role == 'OWNER' %}
+                <span class="owner-badge"><i class="fas fa-crown"></i><span data-i18n="owner">Business owner</span></span>
+              {% else %}
+                <span class="role-badge"><i class="fas fa-user-shield"></i><span class="js-role">{{ member.get_role_display|default:member.role }}</span></span>
+              {% endif %}
+              <span class="status-pill {% if member.is_active %}active{% else %}inactive{% endif %}"><i></i><span data-i18n="{% if member.is_active %}active{% else %}inactive{% endif %}">{% if member.is_active %}Active{% else %}Inactive{% endif %}</span></span>
+            </div>
+            <h2>{{ member.full_name|default:"Unnamed user" }}</h2>
+            <p>{{ member.email }}</p>
+            <div class="meta">
+              <span><i class="fas fa-store"></i><span data-i18n="store">Store</span>: {% if member.store %}{{ member.store.name }}{% else %}<span data-i18n="no_store">No store assigned</span>{% endif %}</span>
+              <span><i class="fas fa-calendar-plus"></i><span data-i18n="joined">Joined</span> <time class="js-date" datetime="{{ member.date_joined|date:'c' }}">{{ member.date_joined|date:"M d, Y" }}</time></span>
+            </div>
+          </div>
+        </div>
+        <div class="access-box">
+          <span data-i18n="workspace_access">Workspace access</span>
+          <strong class="js-access"></strong>
+        </div>
+      </div>
+    </section>
+
+    {% if member.role == 'SHIPPER' %}
+    <section class="section"><div class="section-head"><span class="eyebrow" data-i18n="shipper_perf">SHIPPER PERFORMANCE</span><h2 data-i18n="delivery_overview">Delivery overview</h2><p data-i18n="shipper_metrics">Operational metrics for this shipper.</p></div>
+      <div class="kpis seven">
+        <div class="kpi green"><i class="fas fa-box"></i><label data-i18n="assigned">Assigned orders</label><b>{{ member_stats.assigned_orders|default:0 }}</b><small data-i18n="total_assigned">Total assigned</small></div>
+        <div class="kpi green"><i class="fas fa-truck-fast"></i><label data-i18n="delivered">Delivered</label><b>{{ member_stats.delivered_orders|default:0 }}</b><small data-i18n="successfully">Successfully delivered</small></div>
+        <div class="kpi orange"><i class="fas fa-clock"></i><label data-i18n="pending">Pending</label><b>{{ member_stats.pending_deliveries|default:0 }}</b><small data-i18n="in_progress">Still in progress</small></div>
+        <div class="kpi green"><i class="fas fa-bullseye"></i><label data-i18n="success_rate">Success rate</label><b>{{ member_stats.success_rate|default:0 }}%</b><small data-i18n="delivery_success">Delivery success</small></div>
+        <div class="kpi red"><i class="fas fa-circle-xmark"></i><label data-i18n="failed">Failed</label><b>{{ member_stats.failed_deliveries|default:0 }}</b><small data-i18n="failed_attempts">Failed attempts</small></div>
+        <div class="kpi green"><i class="fas fa-money-bill-wave"></i><label data-i18n="cash">Cash collected</label><b>{{ member_stats.cash_collected|default:0 }}</b><small data-i18n="cod">COD collected</small></div>
+        <div class="kpi green"><i class="fas fa-stopwatch"></i><label data-i18n="avg_delivery">Avg. delivery</label><b>{{ member_stats.average_delivery_time|default:"—" }}</b><small data-i18n="avg_time">Average time</small></div>
+      </div>
+    </section>
+    {% elif member.role == 'MANAGER' %}
+    <section class="section"><div class="section-head"><span class="eyebrow" data-i18n="manager_perf">MANAGER PERFORMANCE</span><h2 data-i18n="operations">Operations overview</h2><p data-i18n="manager_metrics">Order and team-management activity.</p></div>
+      <div class="kpis">
+        <div class="kpi green"><i class="fas fa-clipboard-check"></i><label data-i18n="reviewed">Orders reviewed</label><b>{{ member_stats.orders_reviewed|default:0 }}</b><small data-i18n="reviewed_by">Reviewed by manager</small></div>
+        <div class="kpi green"><i class="fas fa-circle-check"></i><label data-i18n="confirmed">Confirmed</label><b>{{ member_stats.orders_confirmed|default:0 }}</b><small data-i18n="orders_confirmed">Orders confirmed</small></div>
+        <div class="kpi red"><i class="fas fa-circle-xmark"></i><label data-i18n="rejected">Rejected</label><b>{{ member_stats.orders_rejected|default:0 }}</b><small data-i18n="orders_rejected">Orders rejected</small></div>
+        <div class="kpi green"><i class="fas fa-truck"></i><label data-i18n="assigned_short">Assigned</label><b>{{ member_stats.orders_assigned|default:0 }}</b><small data-i18n="to_shippers">Assigned to shippers</small></div>
+        <div class="kpi orange"><i class="fas fa-hourglass-half"></i><label data-i18n="pending">Pending</label><b>{{ member_stats.pending_orders|default:0 }}</b><small data-i18n="awaiting">Still awaiting action</small></div>
+        <div class="kpi green"><i class="fas fa-users"></i><label data-i18n="team_members">Team members</label><b>{{ member_stats.team_members|default:0 }}</b><small data-i18n="managed">Managed workspace</small></div>
+      </div>
+    </section>
+    {% elif member.role == 'SUPPORT' %}
+    <section class="section"><div class="section-head"><span class="eyebrow" data-i18n="support_perf">SUPPORT PERFORMANCE</span><h2 data-i18n="support_overview">Customer support overview</h2><p data-i18n="support_metrics">Conversation and resolution activity.</p></div>
+      <div class="kpis">
+        <div class="kpi green"><i class="fas fa-comments"></i><label data-i18n="conversations">Conversations</label><b>{{ member_stats.conversations_handled|default:0 }}</b><small data-i18n="handled">Handled conversations</small></div>
+        <div class="kpi green"><i class="fas fa-circle-check"></i><label data-i18n="resolved">Resolved</label><b>{{ member_stats.resolved_conversations|default:0 }}</b><small data-i18n="resolved_cases">Resolved cases</small></div>
+        <div class="kpi orange"><i class="fas fa-clock"></i><label data-i18n="pending">Pending</label><b>{{ member_stats.pending_conversations|default:0 }}</b><small data-i18n="open">Open conversations</small></div>
+        <div class="kpi green"><i class="fas fa-bullseye"></i><label data-i18n="resolution">Resolution rate</label><b>{{ member_stats.resolution_rate|default:0 }}%</b><small data-i18n="resolved_handled">Resolved / handled</small></div>
+        <div class="kpi green"><i class="fas fa-arrow-up-right-dots"></i><label data-i18n="escalated">Escalated</label><b>{{ member_stats.escalated_conversations|default:0 }}</b><small data-i18n="management">Sent to management</small></div>
+        <div class="kpi green"><i class="fas fa-stopwatch"></i><label data-i18n="avg_response">Avg. response</label><b>{{ member_stats.average_response_time|default:"—" }}</b><small data-i18n="response_time">Average response time</small></div>
+      </div>
+    </section>
+    {% elif member.role == 'ACCOUNTANT' %}
+    <section class="section"><div class="section-head"><span class="eyebrow" data-i18n="accounting_perf">ACCOUNTING PERFORMANCE</span><h2 data-i18n="financial">Financial operations</h2><p data-i18n="accounting_metrics">Financial review and collection activity.</p></div>
+      <div class="kpis">
+        <div class="kpi green"><i class="fas fa-file-invoice"></i><label data-i18n="reviewed">Orders reviewed</label><b>{{ member_stats.orders_reviewed|default:0 }}</b><small data-i18n="financially_reviewed">Financially reviewed</small></div>
+        <div class="kpi green"><i class="fas fa-money-bill-wave"></i><label data-i18n="cash">Cash collected</label><b>{{ member_stats.cash_collected|default:0 }}</b><small data-i18n="recorded">Recorded collections</small></div>
+        <div class="kpi green"><i class="fas fa-circle-check"></i><label data-i18n="paid">Paid orders</label><b>{{ member_stats.paid_orders|default:0 }}</b><small data-i18n="marked_paid">Marked as paid</small></div>
+        <div class="kpi orange"><i class="fas fa-clock"></i><label data-i18n="unpaid">Unpaid orders</label><b>{{ member_stats.unpaid_orders|default:0 }}</b><small data-i18n="awaiting_payment">Awaiting payment</small></div>
+        <div class="kpi green"><i class="fas fa-rotate-left"></i><label data-i18n="refunds">Refunds</label><b>{{ member_stats.refunds_processed|default:0 }}</b><small data-i18n="processed">Processed refunds</small></div>
+      </div>
+    </section>
+    {% elif member.role == 'OWNER' %}
+    <section class="section"><div class="section-head"><span class="eyebrow" data-i18n="business_overview">BUSINESS OVERVIEW</span><h2 data-i18n="workspace_snapshot">Workspace snapshot</h2><p data-i18n="owner_metrics">Business-level information for the store owner.</p></div>
+      <div class="kpis">
+        <div class="kpi green"><i class="fas fa-box"></i><label data-i18n="orders">Orders</label><b>{{ member_stats.total_orders|default:0 }}</b><small data-i18n="total_orders">Total orders</small></div>
+        <div class="kpi green"><i class="fas fa-coins"></i><label data-i18n="revenue">Revenue</label><b>{{ member_stats.revenue|default:0 }}</b><small data-i18n="business_revenue">Business revenue</small></div>
+        <div class="kpi green"><i class="fas fa-users"></i><label data-i18n="customers">Customers</label><b>{{ member_stats.customers|default:0 }}</b><small data-i18n="customers_served">Customers served</small></div>
+        <div class="kpi green"><i class="fas fa-user-group"></i><label data-i18n="team">Team</label><b>{{ member_stats.team_members|default:0 }}</b><small data-i18n="team_members">Team members</small></div>
+        <div class="kpi orange"><i class="fas fa-clock"></i><label data-i18n="pending_orders">Pending orders</label><b>{{ member_stats.pending_orders|default:0 }}</b><small data-i18n="needs_attention">Needs attention</small></div>
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="main-grid">
+      <div class="main-col">
+        <section class="profile-card content-card">
+          <div class="card-head"><div><span class="eyebrow" data-i18n="activity_trend">ACTIVITY TREND</span><h3 data-i18n="activity_over_time">Activity over time</h3><p data-i18n="period_description">Recent activity across the selected period.</p></div><span class="period" data-i18n="last_7">Last 7 days</span></div>
+          <div class="chart-wrap"><canvas id="profileActivityChart"></canvas></div>
+        </section>
+
+        <section class="profile-card content-card">
+          <div class="card-head"><div><span class="eyebrow" data-i18n="recent_activity">RECENT ACTIVITY</span><h3 data-i18n="latest_actions">Latest actions</h3><p data-i18n="activity_description">Recent activity associated with this account.</p></div></div>
+          <div class="activity-list">
+            {% for activity in recent_activity %}
+            <div class="activity"><span class="activity-icon"><i class="fas {{ activity.icon|default:'fa-circle' }}"></i></span><div><strong>{{ activity.title }}</strong><p>{{ activity.description|default:"" }}</p></div><time>{{ activity.time|default:"Recently" }}</time></div>
+            {% empty %}
+            <div class="empty"><i class="fas fa-clock-rotate-left"></i><strong data-i18n="no_activity">No recent activity</strong><span data-i18n="activity_appears">Activity will appear here as this member works.</span></div>
+            {% endfor %}
+          </div>
+        </section>
+
+        {% if member.role == 'SHIPPER' %}
+        <section class="profile-card content-card">
+          <div class="card-head"><div><span class="eyebrow" data-i18n="work_history">WORK HISTORY</span><h3 data-i18n="recent_deliveries">Recent deliveries</h3><p data-i18n="delivery_history">The latest orders handled by this shipper.</p></div><a href="#" class="card-link"><span data-i18n="view_all">View all</span><i class="fas fa-arrow-right"></i></a></div>
+          <div class="orders">
+            {% for order in recent_orders %}
+            <div class="order"><span class="order-icon"><i class="fas fa-box"></i></span><div><strong>#{{ order.number }}</strong><small>{{ order.customer_name|default:"Customer" }}</small></div><b>{{ order.amount|default:"—" }}</b><span class="order-status {{ order.status|lower|default:'pending' }}">{{ order.status|default:"Pending" }}</span><time>{{ order.time|default:"—" }}</time></div>
+            {% empty %}
+            <div class="empty"><i class="fas fa-box-open"></i><strong data-i18n="no_deliveries">No recent deliveries</strong><span data-i18n="deliveries_appear">Orders handled by this shipper will appear here.</span></div>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+      </div>
+
+      <aside class="sidebar">
+        <section class="profile-card content-card">
+          <div class="card-head"><div><span class="eyebrow" data-i18n="account">ACCOUNT</span><h3 data-i18n="account_info">Account information</h3><p data-i18n="identity_details">Identity and workspace details.</p></div></div>
+          <div class="info">
+            <div><span data-i18n="full_name">Full name</span><strong>{{ member.full_name|default:"Not provided" }}</strong></div>
+            <div><span data-i18n="email">Email address</span><strong>{{ member.email }}</strong></div>
+            <div><span data-i18n="role">Role</span><strong class="js-role">{{ member.get_role_display|default:member.role }}</strong></div>
+            <div><span data-i18n="store">Store</span><strong>{% if member.store %}{{ member.store.name }}{% else %}—{% endif %}</strong></div>
+            <div><span data-i18n="joined">Joined</span><strong class="js-date-time" datetime="{{ member.date_joined|date:'c' }}">{{ member.date_joined|date:"M d, Y · h:i A" }}</strong></div>
+            <div><span data-i18n="status">Status</span><strong class="status-text"><span data-i18n="{% if member.is_active %}active{% else %}inactive{% endif %}">{% if member.is_active %}Active{% else %}Inactive{% endif %}</span></strong></div>
+          </div>
+        </section>
+
+        <section class="profile-card score">
+          <div class="score-ring" style="--score:{{ member_stats.performance_score|default:0 }}%"><span>{{ member_stats.performance_score|default:0 }}<small>%</small></span></div>
+          <div><span class="eyebrow" data-i18n="performance">PERFORMANCE</span><h3 data-i18n="overall_score">Overall score</h3><p data-i18n="score_description">Based on available role metrics.</p></div>
+        </section>
+
+        {% if request.user == member %}
+        <section class="profile-card action-card">
+          <i class="fas fa-pen-to-square"></i><h3 data-i18n="manage_profile">Manage your profile</h3><p data-i18n="keep_updated">Keep your account information up to date.</p>
+          <a href="{% url 'accounts:profile_edit' %}"><span data-i18n="edit">Edit profile</span><i class="fas fa-arrow-right"></i></a>
+        </section>
+        {% endif %}
+      </aside>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{{ chart_data|default:"{}"|json_script:"profile-chart-data" }}
+<script src="{% static 'accounts/js/profile.js' %}"></script>
+{% endblock %}

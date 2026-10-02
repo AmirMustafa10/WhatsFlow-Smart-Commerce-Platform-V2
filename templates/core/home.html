@@ -1,0 +1,529 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}WhatsFlow — Manage Your Business Through WhatsApp{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'core/css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="home-page {% if user.is_authenticated %}is-authenticated{% else %}is-guest{% endif %}" id="homePage" data-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+
+    <!-- ==================== HERO ==================== -->
+    <section class="home-hero">
+        <div class="hero-orb hero-orb-one"></div>
+        <div class="hero-orb hero-orb-two"></div>
+
+        <div class="container app-container">
+            <div class="hero-grid">
+
+                <div class="hero-content reveal">
+                    <div class="hero-eyebrow">
+                        <span class="eyebrow-pulse"></span>
+                        <span data-i18n="hero.eyebrow">Business management through WhatsApp</span>
+                    </div>
+
+                    <h1 class="hero-title">
+                        <span data-i18n="hero.titleA">Run Your Business.</span>
+                        <span class="hero-title-accent" data-i18n="hero.titleB">WhatsApp Handles the Conversation.</span>
+                    </h1>
+
+                    <p class="hero-description" data-i18n="hero.description">
+                        WhatsFlow connects customer conversations with products, services, orders, teams, and AI-powered business knowledge in one platform.
+                    </p>
+
+                    {% if user.is_authenticated %}
+                    <div class="auth-welcome-card">
+                        <div class="auth-welcome-icon"><i class="fas fa-user-check"></i></div>
+                        <div>
+                            <span class="auth-welcome-kicker" data-i18n="auth.kicker">Welcome back</span>
+                            <strong>{% firstof user.get_full_name user.username "Business owner" %}</strong>
+                        </div>
+                        <span class="auth-session-dot" title="Active"></span>
+                    </div>
+
+                    <div class="hero-actions">
+                        <a href="/dashboard/" class="btn btn-primary btn-lg magnetic-btn">
+                            <span data-i18n="auth.dashboard">Open Dashboard</span>
+                            <i class="fas fa-arrow-right btn-icon"></i>
+                        </a>
+                        <a href="#operations" class="btn btn-secondary btn-lg">
+                            <span data-i18n="auth.activity">View Activity</span>
+                        </a>
+                    </div>
+
+                    <div class="hero-note auth-status-note">
+                        <i class="fas fa-shield-check"></i>
+                        <span data-i18n="auth.status">Your account is active. Manage your business, team, orders, and WhatsApp activity from your workspace.</span>
+                    </div>
+                    {% else %}
+                    <div class="hero-actions">
+                        <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-lg magnetic-btn">
+                            <span data-i18n="hero.cta">Create Your Business Account</span>
+                            <i class="fas fa-arrow-right btn-icon"></i>
+                        </a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-lg">
+                            <span data-i18n="hero.signIn">Sign In</span>
+                        </a>
+                    </div>
+
+                    <div class="hero-note">
+                        <i class="fas fa-clock"></i>
+                        <span data-i18n="hero.note">After registration, our platform team will contact you within 24 business hours to connect your WhatsApp number.</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="hero-trust">
+                        <div class="trust-avatars" aria-hidden="true">
+                            <span>AH</span><span>SM</span><span>MK</span><span>+</span>
+                        </div>
+                        <div>
+                            <strong data-i18n="hero.trustTitle">Built around your business</strong>
+                            <small data-i18n="hero.trustText">Conversations, knowledge, and operations in one place.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-visual reveal reveal-delay">
+                    <div class="hero-glow"></div>
+
+                    <div class="hero-dashboard-card" id="liveDashboard">
+                        <div class="dashboard-topbar">
+                            <div class="window-dots" aria-hidden="true">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <span class="dashboard-mini-label" data-i18n="preview.title">WhatsFlow workspace</span>
+                            <span class="live-status">
+                                <span></span>
+                                <span data-i18n="preview.live">Live</span>
+                            </span>
+                        </div>
+
+                        <div class="preview-header">
+                            <div>
+                                <span class="preview-kicker" data-i18n="preview.inbox">Business inbox</span>
+                                <h3 data-i18n="preview.activity">WhatsApp Activity</h3>
+                            </div>
+                            <button class="icon-button" type="button" aria-label="More options">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+
+                        <div class="conversation-list" id="conversationList">
+                            <article class="conversation-item is-new">
+                                <div class="conversation-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="conversation-content">
+                                    <div class="conversation-top">
+                                        <strong data-i18n="preview.customer">New customer</strong>
+                                        <small data-time>Just now</small>
+                                    </div>
+                                    <p data-i18n="preview.customerMsg">Can I order this product?</p>
+                                </div>
+                                <span class="conversation-badge" data-i18n="preview.new">New</span>
+                            </article>
+
+                            <article class="conversation-item">
+                                <div class="conversation-icon icon-green">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="conversation-content">
+                                    <div class="conversation-top">
+                                        <strong>WhatsFlow AI</strong>
+                                        <small data-time>1 min</small>
+                                    </div>
+                                    <p data-i18n="preview.aiMsg">Answered using your business knowledge.</p>
+                                </div>
+                                <span class="ai-chip"><i class="fas fa-sparkles"></i> AI</span>
+                            </article>
+
+                            <article class="conversation-item">
+                                <div class="conversation-icon icon-orange">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="conversation-content">
+                                    <div class="conversation-top">
+                                        <strong data-i18n="preview.order">New order</strong>
+                                        <small data-time>2 min</small>
+                                    </div>
+                                    <p data-i18n="preview.orderMsg">Order received and waiting for review.</p>
+                                </div>
+                                <span class="conversation-badge order-badge" data-i18n="preview.review">Review</span>
+                            </article>
+                        </div>
+
+                        <div class="ai-activity">
+                            <div class="ai-avatar"><i class="fas fa-sparkles"></i></div>
+                            <div class="ai-activity-copy">
+                                <strong data-i18n="preview.aiWorking">AI assistant is working</strong>
+                                <span data-i18n="preview.aiWorkingText">Using your latest business information</span>
+                            </div>
+                            <div class="typing-indicator" aria-hidden="true"><i></i><i></i><i></i></div>
+                        </div>
+
+                        <div class="dashboard-stats">
+                            <div class="preview-stat">
+                                <span data-i18n="preview.customers">Customers</span>
+                                <strong data-counter="128">128</strong>
+                            </div>
+                            <div class="preview-stat">
+                                <span data-i18n="preview.orders">Orders</span>
+                                <strong data-counter="34">34</strong>
+                            </div>
+                            <div class="preview-stat">
+                                <span data-i18n="preview.pending">Pending</span>
+                                <strong data-counter="21">21</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floating-card floating-card-one">
+                        <span class="floating-icon icon-whatsapp"><i class="fab fa-whatsapp"></i></span>
+                        <span>
+                            <strong data-i18n="floating.connected">WhatsApp connected</strong>
+                            <small data-i18n="floating.customer">Customer conversation received</small>
+                        </span>
+                        <i class="fas fa-check floating-check"></i>
+                    </div>
+
+                    <div class="floating-card floating-card-two">
+                        <span class="floating-icon icon-success"><i class="fas fa-check"></i></span>
+                        <span>
+                            <strong data-i18n="floating.order">Order confirmed</strong>
+                            <small data-i18n="floating.team">Team notified</small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-scroll-cue">
+            <span data-i18n="hero.scroll">Explore the platform</span>
+            <i class="fas fa-arrow-down"></i>
+        </div>
+    </section>
+
+    <!-- ==================== VALUE ==================== -->
+    <section class="home-section value-section">
+        <div class="container app-container">
+            <div class="section-heading centered reveal">
+                <span class="section-eyebrow" data-i18n="value.eyebrow">One connected platform</span>
+                <h2 data-i18n="value.title">Everything starts with a WhatsApp conversation.</h2>
+                <p data-i18n="value.description">Connect what your customers say with the information and operations your business needs.</p>
+            </div>
+
+            <div class="value-grid">
+                <article class="value-card interactive-card reveal">
+                    <div class="card-number">01</div>
+                    <div class="value-icon"><i class="fab fa-whatsapp"></i></div>
+                    <h3 data-i18n="value.card1Title">Customer Conversations</h3>
+                    <p data-i18n="value.card1Text">Let customers reach your business through WhatsApp and receive useful, business-aware answers.</p>
+                    <div class="card-link"><span data-i18n="value.explore">Explore conversations</span><i class="fas fa-arrow-right"></i></div>
+                </article>
+
+                <article class="value-card interactive-card reveal reveal-delay-1">
+                    <div class="card-number">02</div>
+                    <div class="value-icon icon-brain"><i class="fas fa-brain"></i></div>
+                    <h3 data-i18n="value.card2Title">Business-Aware AI</h3>
+                    <p data-i18n="value.card2Text">New products, services, and business information become part of the knowledge used by your AI assistant.</p>
+                    <div class="card-link"><span data-i18n="value.exploreKnowledge">Explore AI knowledge</span><i class="fas fa-arrow-right"></i></div>
+                </article>
+
+                <article class="value-card interactive-card reveal reveal-delay-2">
+                    <div class="card-number">03</div>
+                    <div class="value-icon icon-operations"><i class="fas fa-layer-group"></i></div>
+                    <h3 data-i18n="value.card3Title">Business Operations</h3>
+                    <p data-i18n="value.card3Text">Keep customers, products, services, orders, delivery, and team operations connected in one place.</p>
+                    <div class="card-link"><span data-i18n="value.exploreOperations">Explore operations</span><i class="fas fa-arrow-right"></i></div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== HOW IT WORKS ==================== -->
+    <section class="home-section workflow-section">
+        <div class="container app-container">
+            <div class="section-heading reveal">
+                <span class="section-eyebrow" data-i18n="workflow.eyebrow">How it works</span>
+                <h2 data-i18n="workflow.title">From your first signup to your first customer.</h2>
+                <p data-i18n="workflow.description">A simple setup flow that grows with the way your business works.</p>
+            </div>
+
+            <div class="workflow-layout">
+                <div class="workflow-progress">
+                    <div class="progress-track"><span id="workflowProgress"></span></div>
+                    <div class="workflow-step-indicators" id="workflowIndicators">
+                        <button class="workflow-indicator is-active" type="button" data-step="0"><span>01</span></button>
+                        <button class="workflow-indicator" type="button" data-step="1"><span>02</span></button>
+                        <button class="workflow-indicator" type="button" data-step="2"><span>03</span></button>
+                        <button class="workflow-indicator" type="button" data-step="3"><span>04</span></button>
+                        <button class="workflow-indicator" type="button" data-step="4"><span>05</span></button>
+                        <button class="workflow-indicator" type="button" data-step="5"><span>06</span></button>
+                    </div>
+                </div>
+
+                <div class="workflow-content" id="workflowContent">
+                    <article class="workflow-step-card is-active" data-workflow-step="0">
+                        <span class="workflow-tag" data-i18n="workflow.start">Start</span>
+                        <div class="workflow-icon"><i class="fas fa-user-plus"></i></div>
+                        <h3 data-i18n="workflow.step1Title">Create your business account</h3>
+                        <p data-i18n="workflow.step1Text">Create your account and provide your personal and business information.</p>
+                    </article>
+
+                    <article class="workflow-step-card" data-workflow-step="1">
+                        <span class="workflow-tag" data-i18n="workflow.setup">Setup</span>
+                        <div class="workflow-icon"><i class="fas fa-building"></i></div>
+                        <h3 data-i18n="workflow.step2Title">Tell us about your business</h3>
+                        <p data-i18n="workflow.step2Text">Choose your business type and enter the information needed to represent your business.</p>
+                    </article>
+
+                    <article class="workflow-step-card" data-workflow-step="2">
+                        <span class="workflow-tag" data-i18n="workflow.activation">Activation</span>
+                        <div class="workflow-icon"><i class="fas fa-phone-volume"></i></div>
+                        <h3 data-i18n="workflow.step3Title">Connect your WhatsApp number</h3>
+                        <p data-i18n="workflow.step3Text">Our platform team will contact you within 24 business hours to connect your number and activate the business.</p>
+                    </article>
+
+                    <article class="workflow-step-card" data-workflow-step="3">
+                        <span class="workflow-tag" data-i18n="workflow.configure">Configure</span>
+                        <div class="workflow-icon"><i class="fas fa-sparkles"></i></div>
+                        <h3 data-i18n="workflow.step4Title">Add your business knowledge</h3>
+                        <p data-i18n="workflow.step4Text">Add the products, services, FAQs, policies, and information your customers may ask about.</p>
+                    </article>
+
+                    <article class="workflow-step-card" data-workflow-step="4">
+                        <span class="workflow-tag" data-i18n="workflow.team">Team</span>
+                        <div class="workflow-icon"><i class="fas fa-users"></i></div>
+                        <h3 data-i18n="workflow.step5Title">Bring your team in</h3>
+                        <p data-i18n="workflow.step5Text">Add team members, roles, and permissions so the right people can handle daily work.</p>
+                    </article>
+
+                    <article class="workflow-step-card" data-workflow-step="5">
+                        <span class="workflow-tag" data-i18n="workflow.operate">Operate</span>
+                        <div class="workflow-icon"><i class="fas fa-comments"></i></div>
+                        <h3 data-i18n="workflow.step6Title">Let customers start chatting</h3>
+                        <p data-i18n="workflow.step6Text">Customers can contact your business on WhatsApp and receive responses based on your business data.</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== BUSINESS TYPES ==================== -->
+    <section class="home-section business-section">
+        <div class="container app-container">
+            <div class="business-grid">
+                <div class="business-copy reveal">
+                    <span class="section-eyebrow" data-i18n="business.eyebrow">Built for different businesses</span>
+                    <h2 data-i18n="business.title">Your business does not have to look like everyone else's.</h2>
+                    <p data-i18n="business.description">Whether you sell products, provide services, manage deliveries, or operate a larger company, WhatsFlow adapts around the way your customers interact with you.</p>
+
+                    <div class="business-selected">
+                        <span class="selected-icon" id="businessSelectedIcon"><i class="fas fa-shopping-bag"></i></span>
+                        <div>
+                            <small data-i18n="business.selectedLabel">Selected business type</small>
+                            <strong id="businessSelectedText">Retail</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="business-types reveal reveal-delay" id="businessTypes">
+                    <button class="business-type is-selected" type="button" data-business="Retail" data-icon="fa-shopping-bag">
+                        <i class="fas fa-shopping-bag"></i><span data-i18n="business.retail">Retail</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Fashion" data-icon="fa-tshirt">
+                        <i class="fas fa-tshirt"></i><span data-i18n="business.fashion">Fashion</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Restaurants" data-icon="fa-utensils">
+                        <i class="fas fa-utensils"></i><span data-i18n="business.restaurants">Restaurants</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Services" data-icon="fa-tools">
+                        <i class="fas fa-tools"></i><span data-i18n="business.services">Services</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Technology" data-icon="fa-laptop">
+                        <i class="fas fa-laptop"></i><span data-i18n="business.technology">Technology</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Home & Furniture" data-icon="fa-home">
+                        <i class="fas fa-home"></i><span data-i18n="business.home">Home & Furniture</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Professional Services" data-icon="fa-briefcase">
+                        <i class="fas fa-briefcase"></i><span data-i18n="business.professional">Professional Services</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Delivery" data-icon="fa-truck">
+                        <i class="fas fa-truck"></i><span data-i18n="business.delivery">Delivery</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="Companies" data-icon="fa-building">
+                        <i class="fas fa-building"></i><span data-i18n="business.companies">Companies</span>
+                    </button>
+                    <button class="business-type" type="button" data-business="More" data-icon="fa-ellipsis-h">
+                        <i class="fas fa-ellipsis-h"></i><span data-i18n="business.more">And more</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== OPERATIONS ==================== -->
+    <section class="home-section operations-section" id="operations">
+        <div class="container app-container">
+            <div class="section-heading centered reveal">
+                <span class="section-eyebrow" data-i18n="operations.eyebrow">More than a chatbot</span>
+                <h2 data-i18n="operations.title">Turn conversations into business operations.</h2>
+                <p data-i18n="operations.description">Connect what happens in a conversation with what your owner, team, and delivery staff need to do next.</p>
+            </div>
+
+            <div class="operations-flow" id="operationsFlow">
+                <article class="operation-card reveal">
+                    <div class="operation-number">01</div>
+                    <div class="operation-icon"><i class="fas fa-comment-dots"></i></div>
+                    <span data-i18n="operations.step1Label">Customer</span>
+                    <h3 data-i18n="operations.step1Title">Customer asks</h3>
+                    <p data-i18n="operations.step1Text">A customer starts a conversation and asks about your business, products, or services.</p>
+                </article>
+
+                <div class="operation-arrow"><i class="fas fa-arrow-right"></i></div>
+
+                <article class="operation-card reveal reveal-delay-1">
+                    <div class="operation-number">02</div>
+                    <div class="operation-icon icon-ai"><i class="fas fa-robot"></i></div>
+                    <span data-i18n="operations.step2Label">AI</span>
+                    <h3 data-i18n="operations.step2Title">WhatsFlow responds</h3>
+                    <p data-i18n="operations.step2Text">The system uses your business knowledge to provide an appropriate response.</p>
+                </article>
+
+                <div class="operation-arrow"><i class="fas fa-arrow-right"></i></div>
+
+                <article class="operation-card reveal reveal-delay-2">
+                    <div class="operation-number">03</div>
+                    <div class="operation-icon icon-action"><i class="fas fa-clipboard-check"></i></div>
+                    <span data-i18n="operations.step3Label">Team</span>
+                    <h3 data-i18n="operations.step3Title">Business takes action</h3>
+                    <p data-i18n="operations.step3Text">Your owner or team can review requests, confirm orders, and continue the operation.</p>
+                </article>
+
+                <div class="operation-arrow"><i class="fas fa-arrow-right"></i></div>
+
+                <article class="operation-card reveal reveal-delay-3">
+                    <div class="operation-number">04</div>
+                    <div class="operation-icon icon-delivery"><i class="fas fa-truck"></i></div>
+                    <span data-i18n="operations.step4Label">Delivery</span>
+                    <h3 data-i18n="operations.step4Title">Deliver when needed</h3>
+                    <p data-i18n="operations.step4Text">Shippers can receive assigned orders, deliver them, and manage the delivery process.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== TEAM ==================== -->
+    <section class="home-section team-section">
+        <div class="container app-container">
+            <div class="team-grid">
+                <div class="team-visual reveal">
+                    <div class="team-glow"></div>
+
+                    <div class="team-card team-card-owner">
+                        <div class="team-card-top">
+                            <div class="team-avatar"><i class="fas fa-user-tie"></i></div>
+                            <div>
+                                <strong data-i18n="team.owner">Business Owner</strong>
+                                <span data-i18n="team.fullAccess">Full access</span>
+                            </div>
+                            <span class="role-dot"></span>
+                        </div>
+                        <div class="team-permission"><i class="fas fa-check"></i><span data-i18n="team.manage">Manage business</span></div>
+                        <div class="team-permission"><i class="fas fa-check"></i><span data-i18n="team.review">Review orders</span></div>
+                        <div class="team-permission"><i class="fas fa-check"></i><span data-i18n="team.analytics">View analytics</span></div>
+                    </div>
+
+                    <div class="team-card team-card-member">
+                        <div class="team-card-top">
+                            <div class="team-avatar avatar-green"><i class="fas fa-user"></i></div>
+                            <div>
+                                <strong data-i18n="team.member">Team Member</strong>
+                                <span data-i18n="team.operations">Business operations</span>
+                            </div>
+                            <span class="role-dot"></span>
+                        </div>
+                        <div class="team-permission"><i class="fas fa-check"></i><span data-i18n="team.handle">Handle assigned work</span></div>
+                        <div class="team-permission"><i class="fas fa-check"></i><span data-i18n="team.customerRequests">Review customer requests</span></div>
+                    </div>
+
+                    <div class="team-mini-status">
+                        <span class="status-pulse"></span>
+                        <span data-i18n="team.teamOnline">4 team members online</span>
+                    </div>
+                </div>
+
+                <div class="team-copy reveal reveal-delay">
+                    <span class="section-eyebrow" data-i18n="team.eyebrow">Work as a team</span>
+                    <h2 data-i18n="team.title">Give your team a place to work together.</h2>
+                    <p data-i18n="team.description">Business owners can add team members who log in with their own accounts and help manage the daily work of the business.</p>
+
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i><span data-i18n="team.feature1">Add team members to your business</span></li>
+                        <li><i class="fas fa-check"></i><span data-i18n="team.feature2">Create roles and control permissions</span></li>
+                        <li><i class="fas fa-check"></i><span data-i18n="team.feature3">Let the right people handle daily tasks</span></li>
+                        <li><i class="fas fa-check"></i><span data-i18n="team.feature4">Keep every operation connected</span></li>
+                    </ul>
+
+                    <a href="{% url 'accounts:signup' %}" class="text-link">
+                        <span data-i18n="team.cta">Build your team</span><i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FINAL CTA ==================== -->
+    <section class="home-section final-cta-section">
+        <div class="container app-container">
+            <div class="final-cta reveal">
+                <div class="cta-grid-lines"></div>
+                <div class="cta-orb"></div>
+
+                {% if user.is_authenticated %}
+                <div class="final-cta-content">
+                    <span class="section-eyebrow" data-i18n="auth.finalEyebrow">Your workspace is ready</span>
+                    <h2 data-i18n="auth.finalTitle">Keep your business moving from one connected workspace.</h2>
+                    <p data-i18n="auth.finalDescription">Review customer conversations, orders, team activity, and business knowledge whenever you need them.</p>
+                </div>
+
+                <div class="final-cta-actions">
+                    <a href="/dashboard/" class="btn btn-primary btn-lg magnetic-btn">
+                        <span data-i18n="auth.dashboard">Open Dashboard</span>
+                        <i class="fas fa-arrow-right btn-icon"></i>
+                    </a>
+                    <span class="final-login-link auth-logged-label">
+                        <i class="fas fa-circle-check"></i>
+                        <span data-i18n="auth.loggedIn">You are signed in</span>
+                    </span>
+                </div>
+                {% else %}
+                <div class="final-cta-content">
+                    <span class="section-eyebrow" data-i18n="cta.eyebrow">Start with your business</span>
+                    <h2 data-i18n="cta.title">Ready to bring your business to WhatsApp?</h2>
+                    <p data-i18n="cta.description">Create your account, tell us about your business, and let WhatsFlow connect your customers, AI, and team.</p>
+                </div>
+
+                <div class="final-cta-actions">
+                    <a href="{% url 'accounts:signup' %}" class="btn btn-primary btn-lg magnetic-btn">
+                        <span data-i18n="cta.button">Create Your Business Account</span>
+                        <i class="fas fa-arrow-right btn-icon"></i>
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="final-login-link">
+                        <span data-i18n="cta.login">Already have an account?</span>
+                        <strong data-i18n="cta.signIn">Sign in</strong>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'core/js/home.js' %}"></script>
+{% endblock %}

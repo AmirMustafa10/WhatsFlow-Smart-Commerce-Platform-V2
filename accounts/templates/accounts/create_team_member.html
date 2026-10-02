@@ -1,0 +1,192 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Team Member | WhatsFlow{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'accounts/css/team_member_create.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="tmc-page" data-default-role="SHIPPER">
+    <div class="tmc-bg" aria-hidden="true">
+        <span class="tmc-orb tmc-orb-one"></span>
+        <span class="tmc-orb tmc-orb-two"></span>
+        <span class="tmc-grid"></span>
+    </div>
+
+    <div class="container position-relative tmc-container">
+        <header class="tmc-header">
+            <a href="{% url 'accounts:team_list' %}" class="tmc-back">
+                <i class="fas fa-arrow-left"></i>
+                <span data-en="Back to team" data-ar="العودة إلى الفريق">Back to team</span>
+            </a>
+            <div class="tmc-header-status">
+                <span class="tmc-live-dot"></span>
+                <span data-en="Team workspace" data-ar="مساحة عمل الفريق">Team workspace</span>
+            </div>
+        </header>
+
+        <div class="tmc-layout">
+            <section class="tmc-intro">
+                <div class="tmc-kicker">
+                    <span class="tmc-kicker-icon"><i class="fas fa-user-plus"></i></span>
+                    <span data-en="TEAM MANAGEMENT" data-ar="إدارة الفريق">TEAM MANAGEMENT</span>
+                </div>
+
+                <h1>
+                    <span data-en="Build the right team" data-ar="كوّن فريقك المناسب">Build the right team</span>
+                    <em data-en="for your business." data-ar="لبيزنسك.">for your business.</em>
+                </h1>
+                <p class="tmc-intro-copy" data-en="Create a secure account, choose the right responsibility, and give your teammate a clear place in the workspace." data-ar="أنشئ حسابًا آمنًا، واختر المسؤولية المناسبة، وامنح عضو فريقك مكانًا واضحًا داخل مساحة العمل.">
+                    Create a secure account, choose the right responsibility, and give your teammate a clear place in the workspace.
+                </p>
+
+                <div class="tmc-benefits">
+                    <article>
+                        <span><i class="fas fa-shield-halved"></i></span>
+                        <div><strong data-en="Role-based access" data-ar="صلاحيات حسب الدور">Role-based access</strong><small data-en="Access follows the responsibility you assign." data-ar="الصلاحيات تتحدد حسب الدور الذي تختاره.">Access follows the responsibility you assign.</small></div>
+                    </article>
+                    <article>
+                        <span><i class="fas fa-store"></i></span>
+                        <div><strong data-en="Connected workspace" data-ar="مساحة عمل مرتبطة">Connected workspace</strong><small data-en="The account is linked to your business automatically." data-ar="الحساب يرتبط ببيزنسك تلقائيًا.">The account is linked to your business automatically.</small></div>
+                    </article>
+                    <article>
+                        <span><i class="fas fa-lock"></i></span>
+                        <div><strong data-en="Private credentials" data-ar="بيانات دخول خاصة">Private credentials</strong><small data-en="Every teammate gets their own secure login." data-ar="كل عضو يحصل على بيانات دخول خاصة به.">Every teammate gets their own secure login.</small></div>
+                    </article>
+                </div>
+
+                <div class="tmc-preview" aria-live="polite">
+                    <div class="tmc-preview-head">
+                        <div>
+                            <span class="tmc-preview-eyebrow" data-en="NEW MEMBER PREVIEW" data-ar="معاينة العضو الجديد">NEW MEMBER PREVIEW</span>
+                            <strong data-en="How they will appear" data-ar="كيف سيظهر العضو">How they will appear</strong>
+                        </div>
+                        <span class="tmc-preview-badge"><i class="fas fa-circle-check"></i><span data-en="Ready" data-ar="جاهز">Ready</span></span>
+                    </div>
+                    <div class="tmc-preview-person">
+                        <div class="tmc-preview-avatar" id="previewAvatar">N</div>
+                        <div class="tmc-preview-info">
+                            <strong id="previewName" data-empty="New team member">New team member</strong>
+                            <span id="previewEmail">member@yourbusiness.com</span>
+                            <div class="tmc-preview-meta">
+                                <span id="previewRoleIcon"><i class="fas fa-truck"></i></span>
+                                <b id="previewRole">Shipper</b>
+                                <i class="fas fa-circle"></i>
+                                <span data-en="Workspace access" data-ar="صلاحية مساحة العمل">Workspace access</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tmc-preview-foot">
+                        <span><i class="fas fa-link"></i><span data-en="Connected to your business" data-ar="مرتبط ببيزنسك">Connected to your business</span></span>
+                        <span><i class="fas fa-check"></i><span data-en="Account created by owner" data-ar="الحساب منشأ بواسطة المالك">Account created by owner</span></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tmc-card">
+                <div class="tmc-card-top">
+                    <div class="tmc-card-icon"><i class="fas fa-user-plus"></i></div>
+                    <div>
+                        <span data-en="NEW TEAM MEMBER" data-ar="عضو فريق جديد">NEW TEAM MEMBER</span>
+                        <h2 data-en="Add team member" data-ar="إضافة عضو للفريق">Add team member</h2>
+                        <p data-en="Set up their identity, role, and secure password." data-ar="أنشئ بياناته، وحدد دوره، وكلمة المرور الآمنة.">Set up their identity, role, and secure password.</p>
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="tmc-error-box">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <div>{{ form.non_field_errors }}</div>
+                </div>
+                {% endif %}
+
+                <form method="POST" id="teamMemberCreateForm" class="tmc-form" novalidate>
+                    {% csrf_token %}
+
+                    <section class="tmc-section">
+                        <div class="tmc-section-head">
+                            <span class="tmc-number">01</span>
+                            <div><strong data-en="Personal details" data-ar="البيانات الشخصية">Personal details</strong><small data-en="Tell us who is joining the workspace." data-ar="أدخل بيانات الشخص الذي سينضم لمساحة العمل.">Tell us who is joining the workspace.</small></div>
+                        </div>
+                        <div class="tmc-fields">
+                            <div class="tmc-field">{{ form.full_name|as_crispy_field }}</div>
+                            <div class="tmc-field">{{ form.email|as_crispy_field }}</div>
+                        </div>
+                    </section>
+
+                    <div class="tmc-divider"></div>
+
+                    <section class="tmc-section">
+                        <div class="tmc-section-head">
+                            <span class="tmc-number">02</span>
+                            <div><strong data-en="Choose a role" data-ar="اختر الدور">Choose a role</strong><small data-en="The role shapes what this member is responsible for." data-ar="الدور يحدد مسؤوليات وصلاحيات العضو.">The role shapes what this member is responsible for.</small></div>
+                        </div>
+
+                        <div class="tmc-roles" id="teamRoleSelector">
+                            <button type="button" class="tmc-role active" data-role="SHIPPER" data-label-en="Shipper" data-label-ar="مندوب توصيل" data-icon="fa-truck">
+                                <span class="tmc-role-icon green"><i class="fas fa-truck"></i></span>
+                                <span class="tmc-role-copy"><strong data-en="Shipper" data-ar="مندوب توصيل">Shipper</strong><small data-en="Deliveries and shipping operations." data-ar="التوصيل وعمليات الشحن.">Deliveries and shipping operations.</small></span>
+                                <span class="tmc-radio"><i class="fas fa-check"></i></span>
+                            </button>
+                            <button type="button" class="tmc-role" data-role="MANAGER" data-label-en="Manager" data-label-ar="مدير" data-icon="fa-user-tie">
+                                <span class="tmc-role-icon purple"><i class="fas fa-user-tie"></i></span>
+                                <span class="tmc-role-copy"><strong data-en="Manager" data-ar="مدير">Manager</strong><small data-en="Daily store operations and oversight." data-ar="إدارة ومتابعة عمليات المتجر اليومية.">Daily store operations and oversight.</small></span>
+                                <span class="tmc-radio"><i class="fas fa-check"></i></span>
+                            </button>
+                            <button type="button" class="tmc-role" data-role="SUPPORT" data-label-en="Support" data-label-ar="دعم العملاء" data-icon="fa-headset">
+                                <span class="tmc-role-icon blue"><i class="fas fa-headset"></i></span>
+                                <span class="tmc-role-copy"><strong data-en="Support" data-ar="دعم العملاء">Support</strong><small data-en="Customer conversations and assistance." data-ar="محادثات العملاء والمساعدة.">Customer conversations and assistance.</small></span>
+                                <span class="tmc-radio"><i class="fas fa-check"></i></span>
+                            </button>
+                            <button type="button" class="tmc-role" data-role="ACCOUNTANT" data-label-en="Accountant" data-label-ar="محاسب" data-icon="fa-calculator">
+                                <span class="tmc-role-icon gold"><i class="fas fa-calculator"></i></span>
+                                <span class="tmc-role-copy"><strong data-en="Accountant" data-ar="محاسب">Accountant</strong><small data-en="Financial records and accounting tasks." data-ar="السجلات المالية والمهام المحاسبية.">Financial records and accounting tasks.</small></span>
+                                <span class="tmc-radio"><i class="fas fa-check"></i></span>
+                            </button>
+                            <input type="hidden" name="role" id="selectedRole" value="SHIPPER">
+                        </div>
+                        <div class="tmc-role-note"><i class="fas fa-circle-info"></i><span data-en="You can change the member's role later from team management." data-ar="يمكنك تغيير دور العضو لاحقًا من إدارة الفريق.">You can change the member's role later from team management.</span></div>
+                    </section>
+
+                    <div class="tmc-divider"></div>
+
+                    <section class="tmc-section">
+                        <div class="tmc-section-head">
+                            <span class="tmc-number">03</span>
+                            <div><strong data-en="Secure login" data-ar="تأمين تسجيل الدخول">Secure login</strong><small data-en="Create the credentials they will use to sign in." data-ar="أنشئ بيانات الدخول التي سيستخدمها العضو.">Create the credentials they will use to sign in.</small></div>
+                        </div>
+                        <div class="tmc-password-wrap">
+                            {{ form.password|as_crispy_field }}
+                            <button type="button" class="tmc-password-toggle" id="togglePassword" aria-label="Show password"><i class="fas fa-eye"></i></button>
+                        </div>
+                        <div class="tmc-strength" aria-live="polite">
+                            <div class="tmc-strength-bars"><span></span><span></span><span></span><span></span></div>
+                            <div class="tmc-strength-text" id="passwordStrengthText" data-en="Enter a password" data-ar="أدخل كلمة مرور">Enter a password</div>
+                        </div>
+                    </section>
+
+                    <div class="tmc-security">
+                        <span><i class="fas fa-shield-halved"></i></span>
+                        <div><strong data-en="Secure by default" data-ar="آمن افتراضيًا">Secure by default</strong><p data-en="The new account is connected to your business and created with the selected role." data-ar="الحساب الجديد يرتبط ببيزنسك ويتم إنشاؤه بالدور الذي اخترته.">The new account is connected to your business and created with the selected role.</p></div>
+                    </div>
+
+                    <footer class="tmc-footer">
+                        <a href="{% url 'accounts:team_list' %}" class="tmc-cancel" data-en="Cancel" data-ar="إلغاء">Cancel</a>
+                        <button type="submit" class="tmc-submit" id="createMemberSubmit">
+                            <span class="tmc-submit-normal"><i class="fas fa-user-plus"></i><span data-en="Add team member" data-ar="إضافة عضو للفريق">Add team member</span></span>
+                            <span class="tmc-submit-loading"><span class="spinner-border spinner-border-sm"></span><span data-en="Creating..." data-ar="جارٍ الإنشاء...">Creating...</span></span>
+                        </button>
+                    </footer>
+                </form>
+            </section>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'accounts/js/team_member_create.js' %}"></script>
+{% endblock %}

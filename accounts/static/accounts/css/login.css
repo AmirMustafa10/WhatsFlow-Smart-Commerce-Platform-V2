@@ -1,0 +1,541 @@
+
+.wf-login-page {
+    --wf-primary: #168a70;
+    --wf-primary-strong: #0f725d;
+    --wf-accent: #25d366;
+    --wf-text: #15241f;
+    --wf-muted: #6f7e79;
+    --wf-border: rgba(21, 36, 31, .11);
+    --wf-card: rgba(255,255,255,.94);
+    position: relative;
+    min-height: calc(100vh - 80px);
+    overflow: hidden;
+    isolation: isolate;
+    background: #f4f8f6;
+    color: var(--wf-text);
+}
+
+html[data-theme="dark"] .wf-login-page {
+    --wf-text: #eef7f3;
+    --wf-muted: #a8bbb4;
+    --wf-border: rgba(255,255,255,.11);
+    --wf-card: rgba(18,27,24,.96);
+    background: #0c1512;
+}
+
+.wf-login-container {
+    position: relative;
+    z-index: 2;
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    padding-top: 52px;
+    padding-bottom: 52px;
+}
+
+.wf-login-layout {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, .78fr);
+    gap: clamp(44px, 7vw, 110px);
+    align-items: center;
+}
+
+.wf-login-intro {
+    max-width: 680px;
+}
+
+.wf-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 34px;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+
+.wf-brand-icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--wf-primary);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(22,138,112,.2);
+}
+
+.wf-eyebrow,
+.wf-card-kicker {
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    color: var(--wf-primary);
+}
+
+.wf-login-intro h1 {
+    margin: 12px 0 20px;
+    font-size: clamp(42px, 5vw, 72px);
+    line-height: .98;
+    letter-spacing: -.055em;
+    font-weight: 850;
+}
+
+.wf-login-intro h1 span {
+    color: var(--wf-primary);
+}
+
+.wf-login-intro > p {
+    max-width: 610px;
+    margin: 0;
+    color: var(--wf-muted);
+    font-size: 17px;
+    line-height: 1.75;
+}
+
+.wf-login-points {
+    margin-top: 36px;
+    display: grid;
+    gap: 13px;
+}
+
+.wf-point {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.wf-point > span {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: rgba(22,138,112,.09);
+    color: var(--wf-primary);
+}
+
+.wf-point strong,
+.wf-point small {
+    display: block;
+}
+
+.wf-point strong {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.wf-point small {
+    color: var(--wf-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.wf-login-card {
+    width: 100%;
+    padding: clamp(28px, 4vw, 42px);
+    border: 1px solid var(--wf-border);
+    border-radius: 26px;
+    background: var(--wf-card);
+    box-shadow: 0 28px 70px rgba(22, 45, 38, .12);
+    backdrop-filter: blur(16px);
+}
+
+html[data-theme="dark"] .wf-login-card {
+    box-shadow: 0 28px 70px rgba(0,0,0,.32);
+}
+
+.wf-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 28px;
+}
+
+.wf-card-top h2 {
+    margin: 7px 0 7px;
+    font-size: 30px;
+    letter-spacing: -.035em;
+}
+
+.wf-card-top p {
+    margin: 0;
+    color: var(--wf-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.wf-secure-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(37,211,102,.09);
+    color: var(--wf-primary);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.wf-form-alert,
+.wf-field-error {
+    color: #c33e4b;
+    font-size: 12px;
+}
+
+.wf-form-alert {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border: 1px solid rgba(195,62,75,.2);
+    border-radius: 12px;
+    background: rgba(195,62,75,.06);
+}
+
+.wf-login-form {
+    display: grid;
+    gap: 19px;
+}
+
+.wf-field label,
+.wf-label-row label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.wf-label-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.wf-label-row label {
+    margin-bottom: 8px;
+}
+
+.wf-forgot {
+    color: var(--wf-primary);
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.wf-forgot:hover {
+    text-decoration: underline;
+}
+
+.wf-input-wrap {
+    position: relative;
+}
+
+.wf-input-wrap > i {
+    position: absolute;
+    z-index: 2;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8c9b96;
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.wf-input-wrap input,
+.wf-input-wrap select {
+    width: 100%;
+    min-height: 50px;
+    padding: 0 44px 0 40px;
+    border: 1px solid var(--wf-border);
+    border-radius: 13px;
+    outline: none;
+    background: rgba(255,255,255,.7);
+    color: var(--wf-text);
+    font: inherit;
+    font-size: 13px;
+    transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+
+html[data-theme="dark"] .wf-input-wrap input,
+html[data-theme="dark"] .wf-input-wrap select {
+    background: rgba(255,255,255,.035);
+}
+
+.wf-input-wrap input:focus,
+.wf-input-wrap select:focus {
+    border-color: rgba(22,138,112,.55);
+    box-shadow: 0 0 0 4px rgba(22,138,112,.09);
+    background: transparent;
+}
+
+.wf-input-wrap input::placeholder {
+    color: #9aa7a2;
+}
+
+.wf-password-toggle {
+    position: absolute;
+    z-index: 3;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #83928d;
+    cursor: pointer;
+}
+
+.wf-password-toggle:hover {
+    background: rgba(22,138,112,.08);
+    color: var(--wf-primary);
+}
+
+.wf-field-error {
+    margin-top: 7px;
+}
+
+.wf-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--wf-muted);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.wf-check input {
+    accent-color: var(--wf-primary);
+}
+
+.wf-submit {
+    position: relative;
+    width: 100%;
+    min-height: 52px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--wf-primary);
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
+}
+
+.wf-submit:hover {
+    background: var(--wf-primary-strong);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(22,138,112,.2);
+}
+
+.wf-submit:disabled {
+    opacity: .78;
+    cursor: wait;
+    transform: none;
+}
+
+.wf-submit-arrow {
+    position: absolute;
+    right: 17px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.wf-submit-loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+.wf-login-form.is-submitting .wf-submit-label,
+.wf-login-form.is-submitting .wf-submit-arrow {
+    display: none;
+}
+
+.wf-login-form.is-submitting .wf-submit-loading {
+    display: inline-flex;
+}
+
+.wf-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,.38);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: wf-spin .7s linear infinite;
+}
+
+.wf-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 23px 0 17px;
+    color: #97a39f;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .14em;
+}
+
+.wf-divider::before,
+.wf-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: var(--wf-border);
+}
+
+.wf-signup {
+    margin: 0;
+    text-align: center;
+    color: var(--wf-muted);
+    font-size: 12px;
+}
+
+.wf-signup a {
+    color: var(--wf-primary);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.wf-signup a:hover {
+    text-decoration: underline;
+}
+
+.wf-login-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.wf-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: .42;
+}
+
+.wf-orb-1 {
+    width: 420px;
+    height: 420px;
+    top: -210px;
+    right: 10%;
+    background: rgba(37,211,102,.11);
+}
+
+.wf-orb-2 {
+    width: 360px;
+    height: 360px;
+    bottom: -180px;
+    left: 4%;
+    background: rgba(22,138,112,.09);
+}
+
+.wf-grid {
+    position: absolute;
+    inset: 0;
+    opacity: .25;
+    background-image: linear-gradient(rgba(22,138,112,.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(22,138,112,.05) 1px, transparent 1px);
+    background-size: 38px 38px;
+}
+
+@keyframes wf-spin {
+    to { transform: rotate(360deg); }
+}
+
+html[dir="rtl"] .wf-login-page {
+    text-align: right;
+}
+
+html[dir="rtl"] .wf-input-wrap > i {
+    left: auto;
+    right: 14px;
+}
+
+html[dir="rtl"] .wf-input-wrap input,
+html[dir="rtl"] .wf-input-wrap select {
+    padding-left: 44px;
+    padding-right: 40px;
+}
+
+html[dir="rtl"] .wf-password-toggle {
+    right: auto;
+    left: 7px;
+}
+
+html[dir="rtl"] .wf-submit-arrow {
+    right: auto;
+    left: 17px;
+}
+
+html[dir="rtl"] .wf-card-top,
+html[dir="rtl"] .wf-label-row {
+    direction: rtl;
+}
+
+@media (max-width: 991.98px) {
+    .wf-login-layout {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+
+    .wf-login-intro {
+        max-width: 760px;
+    }
+
+    .wf-login-intro h1 {
+        font-size: clamp(38px, 8vw, 58px);
+    }
+
+    .wf-login-points {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .wf-login-container {
+        padding-top: 30px;
+        padding-bottom: 34px;
+    }
+
+    .wf-login-layout {
+        gap: 28px;
+    }
+
+    .wf-brand-mark {
+        margin-bottom: 25px;
+    }
+
+    .wf-login-intro > p {
+        font-size: 14px;
+    }
+
+    .wf-login-points {
+        grid-template-columns: 1fr;
+        margin-top: 25px;
+    }
+
+    .wf-login-card {
+        padding: 24px 19px;
+        border-radius: 21px;
+    }
+
+    .wf-card-top {
+        margin-bottom: 22px;
+    }
+
+    .wf-secure-badge {
+        display: none;
+    }
+}

@@ -1,0 +1,163 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Login | WhatsFlow{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="wf-login-page" data-login-page>
+    <div class="wf-login-bg" aria-hidden="true">
+        <span class="wf-orb wf-orb-1"></span>
+        <span class="wf-orb wf-orb-2"></span>
+        <span class="wf-grid"></span>
+    </div>
+
+    <div class="container wf-login-container">
+        <div class="wf-login-layout">
+
+            <section class="wf-login-intro">
+                <div class="wf-brand-mark" aria-hidden="true">
+                    <span class="wf-brand-icon"><i class="fab fa-whatsapp"></i></span>
+                    <span>WhatsFlow</span>
+                </div>
+
+                <span class="wf-eyebrow" data-i18n="eyebrow">
+                    BUSINESS OPERATIONS
+                </span>
+
+                <h1 data-i18n="title">
+                    Welcome back.<br>
+                    <span>Let’s get your business moving.</span>
+                </h1>
+
+                <p data-i18n="subtitle">
+                    Manage conversations, orders, customers, products, and your team from one connected workspace.
+                </p>
+
+                <div class="wf-login-points">
+                    <div class="wf-point">
+                        <span><i class="fas fa-comments"></i></span>
+                        <div>
+                            <strong data-i18n="point1Title">WhatsApp conversations</strong>
+                            <small data-i18n="point1Text">Keep customer conversations connected to your business.</small>
+                        </div>
+                    </div>
+
+                    <div class="wf-point">
+                        <span><i class="fas fa-clipboard-check"></i></span>
+                        <div>
+                            <strong data-i18n="point2Title">Order operations</strong>
+                            <small data-i18n="point2Text">Review and manage orders as they move through your workflow.</small>
+                        </div>
+                    </div>
+
+                    <div class="wf-point">
+                        <span><i class="fas fa-users"></i></span>
+                        <div>
+                            <strong data-i18n="point3Title">Team workspace</strong>
+                            <small data-i18n="point3Text">Give every team member the tools they need for their role.</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="wf-login-card" aria-labelledby="login-heading">
+                <div class="wf-card-top">
+                    <div>
+                        <span class="wf-card-kicker" data-i18n="signinKicker">SIGN IN</span>
+                        <h2 id="login-heading" data-i18n="signinTitle">Welcome back</h2>
+                        <p data-i18n="signinText">Sign in to continue to your WhatsFlow workspace.</p>
+                    </div>
+                    <span class="wf-secure-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span data-i18n="secure">Secure</span>
+                    </span>
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="wf-form-alert" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'accounts:login' %}" class="wf-login-form" novalidate>
+                    {% csrf_token %}
+
+                    <div class="wf-field">
+                        <label for="{{ form.username.id_for_label }}" data-i18n="emailLabel">Email address</label>
+                        <div class="wf-input-wrap">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
+                            {{ form.username }}
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="wf-field-error">
+                                {% for error in form.username.errors %}<span>{{ error }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="wf-field">
+                        <div class="wf-label-row">
+                            <label for="{{ form.password.id_for_label }}" data-i18n="passwordLabel">Password</label>
+                            <a href="{% url 'accounts:password_change' %}" class="wf-forgot" data-i18n="forgot">Forgot password?</a>
+                        </div>
+
+                        <div class="wf-input-wrap">
+                            <i class="fas fa-lock" aria-hidden="true"></i>
+                            {{ form.password }}
+                            <button type="button"
+                                    class="wf-password-toggle"
+                                    data-password-toggle
+                                    aria-label="Show password"
+                                    data-aria-show-en="Show password"
+                                    data-aria-show-ar="إظهار كلمة المرور"
+                                    data-aria-hide-en="Hide password"
+                                    data-aria-hide-ar="إخفاء كلمة المرور"
+                                    title="Show password">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <div class="wf-field-error">
+                                {% for error in form.password.errors %}<span>{{ error }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.remember_me %}
+                    <label class="wf-check">
+                        {{ form.remember_me }}
+                        <span data-i18n="remember">Remember me</span>
+                    </label>
+                    {% endif %}
+
+                    <button type="submit" class="wf-submit" data-submit>
+                        <span class="wf-submit-label" data-i18n="submit">Sign in</span>
+                        <span class="wf-submit-loading" aria-hidden="true">
+                            <span class="wf-spinner"></span>
+                            <span data-i18n="signingIn">Signing in...</span>
+                        </span>
+                        <i class="fas fa-arrow-right wf-submit-arrow" aria-hidden="true"></i>
+                    </button>
+                </form>
+
+                <div class="wf-divider"><span data-i18n="or">OR</span></div>
+
+                <p class="wf-signup">
+                    <span data-i18n="noAccount">Don't have a business account?</span>
+                    <a href="{% url 'accounts:signup' %}" data-i18n="createAccount">Create one</a>
+                </p>
+            </section>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'accounts/js/login.js' %}"></script>
+{% endblock %}

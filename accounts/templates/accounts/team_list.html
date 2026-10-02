@@ -1,0 +1,189 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Team | WhatsFlow{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'accounts/css/team.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="team-page" data-page="team">
+    <div class="team-page-bg" aria-hidden="true">
+        <div class="team-glow team-glow-one"></div>
+        <div class="team-glow team-glow-two"></div>
+        <div class="team-grid"></div>
+    </div>
+
+    <div class="container position-relative team-container">
+        <header class="team-page-header reveal">
+            <div class="team-heading-copy">
+                <span class="team-eyebrow"><i class="fas fa-users"></i><span data-en="TEAM MANAGEMENT" data-ar="إدارة الفريق">TEAM MANAGEMENT</span></span>
+                <h1 data-en="Your team, in one place" data-ar="فريقك كله في مكان واحد">Your team, in one place</h1>
+                <p data-en="See your business owner and every person with access to your workspace. Open any profile for the full details."
+                   data-ar="شوف مالك البيزنس وكل شخص عنده صلاحية على مساحة العمل، وافتح أي بروفايل لمشاهدة التفاصيل الكاملة.">See your business owner and every person with access to your workspace. Open any profile for the full details.</p>
+            </div>
+
+            {% if user.role == 'OWNER' %}
+            <a href="{% url 'accounts:team_member_create' %}" class="btn team-add-btn magnetic">
+                <i class="fas fa-user-plus"></i>
+                <span data-en="Add team member" data-ar="إضافة عضو للفريق">Add team member</span>
+            </a>
+            {% endif %}
+        </header>
+
+        {% if messages %}
+        <div class="team-messages reveal">
+            {% for message in messages %}
+            <div class="team-alert team-alert-{{ message.tags }}" role="alert">
+                <span class="team-alert-icon">
+                    {% if message.tags == 'success' %}<i class="fas fa-check"></i>
+                    {% elif message.tags == 'warning' %}<i class="fas fa-exclamation"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}<i class="fas fa-times"></i>
+                    {% else %}<i class="fas fa-info"></i>{% endif %}
+                </span>
+                <span>{{ message }}</span>
+                <button type="button" class="team-alert-close" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <section class="team-stats reveal" aria-label="Team overview">
+            <article class="team-stat-card">
+                <span class="team-stat-icon green"><i class="fas fa-users"></i></span>
+                <div><span data-en="Team members" data-ar="أعضاء الفريق">Team members</span><strong>{{ team_members|length }}</strong></div>
+            </article>
+            <article class="team-stat-card">
+                <span class="team-stat-icon blue"><i class="fas fa-user-check"></i></span>
+                <div><span data-en="Active members" data-ar="الأعضاء النشطون">Active members</span><strong id="visibleMembersCount">{{ team_members|length }}</strong></div>
+            </article>
+            <article class="team-stat-card owner-stat">
+                <span class="team-stat-icon gold"><i class="fas fa-crown"></i></span>
+                <div><span data-en="Business owner" data-ar="مالك البيزنس">Business owner</span><strong>1</strong></div>
+            </article>
+        </section>
+
+        {# The view should provide business_owner. If the logged-in user is the owner, user is a safe fallback. #}
+        {% if business_owner or user.role == 'OWNER' %}
+        <section class="owner-card reveal" data-profile-url="{% if business_owner %}{% url 'accounts:member_profile' business_owner.id %}{% else %}{% url 'accounts:member_profile' user.id %}{% endif %}">
+            <div class="owner-card-glow" aria-hidden="true"></div>
+            <div class="owner-avatar-wrap">
+                <span class="owner-avatar">
+                    {% if business_owner %}{{ business_owner.full_name|default:business_owner.email|first|upper }}{% else %}{{ user.full_name|default:user.email|first|upper }}{% endif %}
+                </span>
+                <span class="owner-crown"><i class="fas fa-crown"></i></span>
+            </div>
+            <div class="owner-info">
+                <div class="owner-label"><i class="fas fa-shield-heart"></i><span data-en="BUSINESS OWNER" data-ar="مالك البيزنس">BUSINESS OWNER</span></div>
+                <h2>{% if business_owner %}{{ business_owner.full_name|default:"Business owner" }}{% else %}{{ user.full_name|default:"Business owner" }}{% endif %}</h2>
+                <p>{% if business_owner %}{{ business_owner.email }}{% else %}{{ user.email }}{% endif %}</p>
+                <div class="owner-meta">
+                    <span><i class="fas fa-key"></i><span data-en="Full business access" data-ar="صلاحية كاملة على البيزنس">Full business access</span></span>
+                    <span class="status-pill active"><i></i><span data-en="Owner account" data-ar="حساب المالك">Owner account</span></span>
+                </div>
+            </div>
+            <button type="button" class="owner-profile-btn profile-trigger" data-profile-url="{% url 'accounts:my_profile' %}">
+                <span data-en="View owner profile" data-ar="عرض بروفايل المالك">View owner profile</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </section>
+        {% endif %}
+
+        <section class="team-card reveal">
+            <div class="team-card-header">
+                <div class="team-title-wrap">
+                    <span class="team-card-icon"><i class="fas fa-user-group"></i></span>
+                    <div>
+                        <h2 data-en="Team members" data-ar="أعضاء الفريق">Team members</h2>
+                        <p data-en="Everyone who helps run your business workspace." data-ar="كل الأشخاص اللي بيساعدوا في تشغيل مساحة عمل البيزنس.">Everyone who helps run your business workspace.</p>
+                    </div>
+                </div>
+
+                <div class="team-toolbar">
+                    <label class="team-search">
+                        <i class="fas fa-search"></i>
+                        <input id="teamSearch" type="search" placeholder="Search name, email or role..." data-placeholder-en="Search name, email or role..." data-placeholder-ar="ابحث بالاسم أو الإيميل أو الدور..." autocomplete="off">
+                        <kbd>⌘ K</kbd>
+                    </label>
+                    <div class="role-filter" role="group" aria-label="Filter by role">
+                        <button type="button" class="filter-chip active" data-role="all" data-en="All" data-ar="الكل">All</button>
+                        <button type="button" class="filter-chip" data-role="MANAGER" data-en="Managers" data-ar="المديرون">Managers</button>
+                        <button type="button" class="filter-chip" data-role="SUPPORT" data-en="Support" data-ar="الدعم">Support</button>
+                        <button type="button" class="filter-chip" data-role="SHIPPER" data-en="Shippers" data-ar="الشحن">Shippers</button>
+                        <button type="button" class="filter-chip" data-role="ACCOUNTANT" data-en="Accountants" data-ar="المحاسبة">Accountants</button>
+                    </div>
+                </div>
+            </div>
+
+            {% if team_members %}
+            <div class="team-grid-list" id="teamGrid">
+                {% for member in team_members %}
+                <article class="member-card" tabindex="0"
+                         data-role="{{ member.role }}"
+                         data-search="{{ member.full_name|default:''|lower }} {{ member.email|default:''|lower }} {{ member.role|default:''|lower }}"
+                         data-profile-url="{% url 'accounts:member_profile' member.id %}">
+                    <div class="member-card-top">
+                        <span class="member-avatar">{{ member.full_name|default:member.email|first|upper }}</span>
+                        <span class="member-status {% if member.is_active %}active{% else %}inactive{% endif %}"><i></i><span>{% if member.is_active %}<span data-en="Active" data-ar="نشط">Active</span>{% else %}<span data-en="Inactive" data-ar="غير نشط">Inactive</span>{% endif %}</span></span>
+                    </div>
+                    <div class="member-card-body">
+                        <h3>{{ member.full_name|default:"Unnamed member" }}</h3>
+                        <p>{{ member.email }}</p>
+                        <span class="member-role">
+                            {% if member.role == 'SHIPPER' %}<i class="fas fa-truck"></i>
+                            {% elif member.role == 'MANAGER' %}<i class="fas fa-user-tie"></i>
+                            {% elif member.role == 'SUPPORT' %}<i class="fas fa-headset"></i>
+                            {% elif member.role == 'ACCOUNTANT' %}<i class="fas fa-calculator"></i>
+                            {% else %}<i class="fas fa-user-shield"></i>{% endif %}
+                            {{ member.role }}
+                        </span>
+                    </div>
+                    <div class="member-card-footer">
+                        <span data-en="Open profile" data-ar="فتح البروفايل">Open profile</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    {% if user.role == 'OWNER' %}
+                    <form method="POST" action="{% url 'accounts:team_member_toggle' member.pk %}" class="member-toggle-form">
+                        {% csrf_token %}
+                        <button type="submit" class="member-toggle {% if member.is_active %}danger{% else %}success{% endif %}" title="{% if member.is_active %}Deactivate{% else %}Activate{% endif %}">
+                            <i class="fas {% if member.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </article>
+                {% endfor %}
+            </div>
+
+            <div class="team-search-empty" id="searchEmpty" hidden>
+                <div class="team-empty-icon"><i class="fas fa-magnifying-glass"></i></div>
+                <h3 data-en="No matching members" data-ar="لا يوجد أعضاء مطابقون">No matching members</h3>
+                <p data-en="Try another name, email, or role." data-ar="جرّب اسمًا أو إيميل أو دورًا مختلفًا.">Try another name, email, or role.</p>
+                <button type="button" class="btn team-reset-btn" id="resetTeamFilters" data-en="Reset filters" data-ar="إعادة الفلاتر">Reset filters</button>
+            </div>
+            {% else %}
+            <div class="team-empty-state">
+                <div class="team-empty-illustration"><i class="fas fa-user-group"></i></div>
+                <h2 data-en="Build your team" data-ar="كوّن فريقك">Build your team</h2>
+                <p data-en="Add your first team member and give them the access they need to help run your business."
+                   data-ar="أضف أول عضو لفريقك وامنحه الصلاحيات التي يحتاجها للمساعدة في تشغيل البيزنس.">Add your first team member and give them the access they need to help run your business.</p>
+                {% if user.role == 'OWNER' %}<a href="{% url 'accounts:team_member_create' %}" class="btn team-empty-btn"><i class="fas fa-plus"></i><span data-en="Add your first team member" data-ar="إضافة أول عضو للفريق">Add your first team member</span></a>{% endif %}
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="team-info-banner reveal">
+            <span class="team-info-icon"><i class="fas fa-lightbulb"></i></span>
+            <div>
+                <strong data-en="Every profile has a dedicated workspace view" data-ar="كل عضو له صفحة بروفايل مخصصة">Every profile has a dedicated workspace view</strong>
+                <p data-en="Click a member card to review their role, status, permissions and account details."
+                   data-ar="اضغط على كارت أي عضو لمراجعة الدور والحالة والصلاحيات وتفاصيل الحساب.">Click a member card to review their role, status, permissions and account details.</p>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'accounts/js/team.js' %}"></script>
+{% endblock %}

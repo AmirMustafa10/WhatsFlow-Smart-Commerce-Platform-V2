@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light" data-language="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WhatsFlow helps businesses connect with their customers through WhatsApp.">
+    <title>{% block title %}WhatsFlow{% endblock %}</title>
+
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem("whatsflow-theme");
+                var language = localStorage.getItem("whatsflow-language");
+                var root = document.documentElement;
+
+                if (theme === "dark" || theme === "light") {
+                    root.dataset.theme = theme;
+                }
+
+                if (language === "ar" || language === "en") {
+                    root.dataset.language = language;
+                    root.lang = language;
+                    root.dir = language === "ar" ? "rtl" : "ltr";
+                }
+            } catch (e) {}
+        })();
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+
+    {% block style %}{% endblock %}
+</head>
+
+<body>
+<div class="app-shell">
+    <a href="#main-content" class="skip-link" data-i18n="skip_to_content">Skip to content</a>
+
+    <header class="app-header">
+        <nav class="app-navbar">
+            <div class="app-container app-navbar-inner">
+
+                <a href="{% url 'home' %}" class="app-brand" aria-label="WhatsFlow Home">
+                    <span class="app-brand-mark">
+                        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                    </span>
+                    <span class="app-brand-copy">
+                        <strong class="app-brand-name">WhatsFlow</strong>
+                        <small class="app-brand-tagline" data-i18n="brand_tagline">Business on WhatsApp</small>
+                    </span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <button type="button" class="app-mobile-toggle" data-mobile-toggle
+                        aria-expanded="false" aria-controls="app-navigation" aria-label="Open navigation">
+                    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                </button>
+
+                <div id="app-navigation" class="app-navigation" data-mobile-menu>
+                    <div class="app-nav-main">
+                        {% if user.is_superuser %}
+                            {% url 'admin:index' as admin_url %}
+                            {% if admin_url %}
+                            <a href="{{ admin_url }}" class="app-nav-link">
+                                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                                <span data-i18n="platform">Platform</span>
+                            </a>
+                            {% endif %}
+                        {% else %}
+                            {% url 'accounts:dashboard' as dashboard_url %}
+                            {% if dashboard_url %}
+                            <a href="{{ dashboard_url }}" class="app-nav-link">
+                            {% else %}
+                            <a href="{% url 'home' %}" class="app-nav-link">
+                            {% endif %}
+                                <i class="fa-solid fa-house" aria-hidden="true"></i>
+                                <span data-i18n="dashboard">Dashboard</span>
+                            </a>
+
+                            {% if user.role == "OWNER" %}
+                            <a href="{% url 'accounts:team_list' %}" class="app-nav-link">
+                                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                                <span data-i18n="team">Team</span>
+                            </a>
+                            {% endif %}
+
+                            {% url 'accounts:profile' as profile_url %}
+                            {% if profile_url %}
+                            <a href="{{ profile_url }}" class="app-nav-link">
+                            {% else %}
+                            <a href="{% url 'accounts:my_profile' %}" class="app-nav-link">
+                            {% endif %}
+                                <i class="fa-regular fa-user" aria-hidden="true"></i>
+                                <span data-i18n="my_profile">My Profile</span>
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="app-nav-account">
+                        {% if user.store and not user.is_superuser %}
+                        <div class="app-store-context">
+                            <span class="app-store-label" data-i18n="business">Business</span>
+                            <span class="app-store-name" title="{{ user.store.name }}">{{ user.store.name }}</span>
+                        </div>
+                        {% endif %}
+
+                        <button type="button" class="app-header-tool app-language-toggle"
+                                data-language-toggle aria-label="Switch language" title="العربية">
+                            <i class="fa-solid fa-language" aria-hidden="true"></i>
+                            <span data-language-label>AR</span>
+                        </button>
+
+                        <button type="button" class="app-header-tool app-theme-toggle"
+                                data-theme-toggle aria-label="Dark mode" title="Dark mode">
+                            <span class="app-theme-icon" data-theme-icon>
+                                <i class="fa-regular fa-moon" aria-hidden="true"></i>
+                            </span>
+                            <span class="app-theme-label" data-theme-label data-i18n="dark_mode">Dark mode</span>
+                        </button>
+
+                        <div class="dropdown">
+                            <button type="button" class="app-account-trigger dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="app-account-avatar">
+                                    <i class="fa-regular fa-user" aria-hidden="true"></i>
+                                </span>
+                                <span class="app-account-info">
+                                    <span class="app-account-name">{{ user.full_name|default:user.email }}</span>
+                                    {% if user.role and not user.is_superuser %}
+                                    <span class="app-account-role">{{ user.get_role_display|default:user.role }}</span>
+                                    {% endif %}
+                                </span>
+                                <i class="fa-solid fa-chevron-down app-account-chevron" aria-hidden="true"></i>
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end app-account-menu">
+                                <li class="app-account-menu-header">
+                                    <span data-i18n="account">Account</span>
+                                    <strong>{{ user.full_name|default:user.email }}</strong>
+                                    {% if user.store and not user.is_superuser %}
+                                    <small>{{ user.store.name }}</small>
+                                    {% endif %}
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+
+                                {% url 'accounts:profile' as profile_menu_url %}
+                                {% if profile_menu_url %}
+                                <li><a href="{{ profile_menu_url }}" class="dropdown-item">
+                                    <i class="fa-regular fa-user"></i><span data-i18n="my_profile">My Profile</span>
+                                </a></li>
+                                {% else %}
+                                <li><a href="{% url 'accounts:my_profile' %}" class="dropdown-item">
+                                    <i class="fa-regular fa-user"></i><span data-i18n="my_profile">My Profile</span>
+                                </a></li>
+                                {% endif %}
+
+                                {% url 'accounts:password_change' as password_change_url %}
+                                {% if password_change_url %}
+                                <li><a href="{{ password_change_url }}" class="dropdown-item">
+                                    <i class="fa-solid fa-lock"></i><span data-i18n="change_password">Change password</span>
+                                </a></li>
+                                {% endif %}
+
+                                <li><hr class="dropdown-divider"></li>
+                                {% url 'accounts:logout' as logout_url %}
+                                {% if logout_url %}
+                                <li>
+                                    <form method="post" action="{{ logout_url }}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item app-logout-item">
+                                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                            <span data-i18n="logout">Log out</span>
+                                        </button>
+                                    </form>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <div class="app-guest-actions">
+                    <button type="button" class="app-header-tool app-language-toggle"
+                            data-language-toggle aria-label="Switch language" title="العربية">
+                        <i class="fa-solid fa-language" aria-hidden="true"></i>
+                        <span data-language-label>AR</span>
+                    </button>
+
+                    <button type="button" class="app-header-tool app-theme-toggle"
+                            data-theme-toggle aria-label="Dark mode" title="Dark mode">
+                        <span class="app-theme-icon" data-theme-icon>
+                            <i class="fa-regular fa-moon" aria-hidden="true"></i>
+                        </span>
+                        <span class="app-theme-label" data-theme-label data-i18n="dark_mode">Dark mode</span>
+                    </button>
+
+                    <a href="{% url 'accounts:login' %}" class="app-guest-login" data-i18n="login">Log in</a>
+                    <a href="{% url 'accounts:signup' %}" class="app-button app-button-primary app-button-small" data-i18n="get_started">Get started</a>
+                </div>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    {% if messages %}
+    <div class="app-container app-notifications" aria-live="polite" aria-atomic="true">
+        {% for message in messages %}
+        <div class="app-notification app-notification-{{ message.tags|default:'info' }}" data-app-notification role="status">
+            <span class="app-notification-icon">
+                {% if "success" in message.tags %}
+                <i class="fa-solid fa-check" aria-hidden="true"></i>
+                {% elif "error" in message.tags or "danger" in message.tags %}
+                <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                {% elif "warning" in message.tags %}
+                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                {% else %}
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                {% endif %}
+            </span>
+            <div class="app-notification-content">{{ message }}</div>
+            <button type="button" class="app-notification-close" data-notification-close aria-label="Close notification">
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main id="main-content" class="app-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer">
+        <div class="app-container">
+            <div class="app-footer-main">
+                <div class="app-footer-brand-area">
+                    <a href="{% url 'home' %}" class="app-footer-brand">
+                        <span class="app-footer-mark"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></span>
+                        <span>WhatsFlow</span>
+                    </a>
+                    <p data-i18n="footer_text">Intelligent business operations on WhatsApp.</p>
+                </div>
+                <nav class="app-footer-nav" aria-label="Footer navigation">
+                    <a href="{% url 'home' %}" data-i18n="home">Home</a>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'accounts:login' %}" data-i18n="login">Log in</a>
+                    <a href="{% url 'accounts:signup' %}" data-i18n="get_started">Get started</a>
+                    {% endif %}
+                </nav>
+            </div>
+            <div class="app-footer-bottom">
+                <span>© {% now "Y" %} WhatsFlow. <span data-i18n="all_rights">All rights reserved.</span></span>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'core/js/base.js' %}"></script>
+{% block script %}{% endblock %}
+</body>
+</html>
