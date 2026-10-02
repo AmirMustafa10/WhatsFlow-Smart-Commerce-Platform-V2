@@ -92,7 +92,7 @@ POSTGRES_HOST=127.0.0.1
 POSTGRES_PORT=5433
 ```
 
-5. Apply Database Migrations:
+### 5. Apply Database Migrations:
 **Linux / macOS:**
 ```bash
 python3 manage.py migrate
@@ -103,7 +103,7 @@ python3 manage.py migrate
 python manage.py migrate
 ```
 
-6. Run the application:
+### 6. Run the application:
 To run the development server:
 
 **Linux / macOS:**
